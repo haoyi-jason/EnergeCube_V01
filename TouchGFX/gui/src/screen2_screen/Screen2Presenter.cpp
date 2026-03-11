@@ -9,10 +9,15 @@ Screen2Presenter::Screen2Presenter(Screen2View& v)
 
 void Screen2Presenter::activate()
 {
-
+    model->bind(this);
 }
 
 void Screen2Presenter::deactivate()
 {
+    model->bind(0);
+}
 
+void Screen2Presenter::energyDataUpdated(const Model::EnergyData& data)
+{
+    view.updateFaultStatus(data.faultFlags, data.chargeEnabled);
 }

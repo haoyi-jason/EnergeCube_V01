@@ -14,6 +14,9 @@ public:
     {
         model = m;
     }
+
+    virtual void energyDataUpdated(const Model::EnergyData& data) {}
+
 protected:
     Model* model;
 };

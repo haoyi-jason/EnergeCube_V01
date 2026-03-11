@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,6 +54,14 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 4096 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* USER CODE BEGIN AppTask_variables */
+osThreadId_t appTaskHandle;
+const osThreadAttr_t appTask_attributes = {
+  .name = "AppTask",
+  .stack_size = 2048 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+/* USER CODE END AppTask_variables */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -96,6 +104,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  appTaskHandle = osThreadNew(AppTask, NULL, &appTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -124,6 +133,20 @@ __weak void TouchGFX_Task(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+
+/**
+  * @brief  Application task — 100 ms periodic tick for energy model simulation.
+  * @param  argument: Not used
+  * @retval None
+  */
+void AppTask(void *argument)
+{
+  for (;;)
+  {
+    model_tick_from_c();
+    osDelay(100); /* 100 ms period */
+  }
+}
 
 /* USER CODE END Application */
 
