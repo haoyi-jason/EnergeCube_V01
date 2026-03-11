@@ -27,6 +27,10 @@ public:
 
     virtual ~Screen1Presenter() {};
 
+    void notifyScreenSetup();
+
+    virtual void energyDataUpdated(const Model::EnergyData& data);
+
 private:
     Screen1Presenter();
 
