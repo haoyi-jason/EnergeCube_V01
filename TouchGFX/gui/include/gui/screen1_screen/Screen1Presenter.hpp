@@ -30,6 +30,7 @@ public:
     void notifyScreenSetup();
 
     virtual void energyDataUpdated(const Model::EnergyData& data);
+    virtual void mainDataUpdated(const Model::MainScreenData& data);
 
 private:
     Screen1Presenter();

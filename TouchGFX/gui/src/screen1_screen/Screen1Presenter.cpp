@@ -21,10 +21,16 @@ void Screen1Presenter::notifyScreenSetup()
 {
     /* Forward current model data to the view immediately after setup */
     energyDataUpdated(model->getEnergyData());
+    mainDataUpdated(model->getMainScreenData());
 }
 
 void Screen1Presenter::energyDataUpdated(const Model::EnergyData& data)
 {
-    view.updateEnergyDisplay(data.voltage_V, data.current_A, data.power_W,
-                             data.soc_pct, data.temperature_C, data.isOnline);
+    (void)data;
+    /* EnergyData is still available for legacy use or future extension */
+}
+
+void Screen1Presenter::mainDataUpdated(const Model::MainScreenData& data)
+{
+    view.updateMainDisplay(data);
 }

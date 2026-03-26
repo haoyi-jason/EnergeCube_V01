@@ -19,6 +19,30 @@ public:
         bool     isOnline;        // System online/comms alive
     };
 
+    struct MainScreenData {
+        // Panel A – AC Input
+        float ac_in_voltage;
+        float ac_in_current;
+        // Panel B – DC Input
+        float dc_in_voltage;
+        float dc_in_current;
+        // Panel C – MPPT
+        float mppt_voltage;
+        float mppt_current;
+        // Panel D – Battery
+        float   bat_voltage;
+        float   bat_current;
+        uint8_t soc_pct;
+        bool    alarm_active;
+        // Panel E – AC Output
+        float ac_out_voltage;
+        float ac_out_current;
+        float ac_out_power;
+        // Panel F – Fan / Temperature
+        int8_t temp_box;
+        int8_t temp_other;
+    };
+
     Model();
 
     void bind(ModelListener* listener)
@@ -39,6 +63,9 @@ public:
     bool isChargeEnabled() const { return energyData.chargeEnabled; }
     bool isOnline() const { return energyData.isOnline; }
 
+    const MainScreenData& getMainScreenData() const { return mainData; }
+    void setMainScreenData(const MainScreenData& d);
+
     // Setters
     void setVoltage(float v) { energyData.voltage_V = v; }
     void setCurrent(float a) { energyData.current_A = a; }
@@ -53,8 +80,9 @@ protected:
     ModelListener* modelListener;
 
 private:
-    EnergyData energyData;
-    uint32_t   tickCounter;
+    EnergyData     energyData;
+    MainScreenData mainData;
+    uint32_t       tickCounter;
 };
 
 #endif // MODEL_HPP

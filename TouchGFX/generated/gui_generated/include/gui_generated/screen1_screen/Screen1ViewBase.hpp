@@ -8,8 +8,9 @@
 #include <mvp/View.hpp>
 #include <gui/screen1_screen/Screen1Presenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
-#include <touchgfx/widgets/ToggleButton.hpp>
 #include <touchgfx/widgets/Button.hpp>
+#include <touchgfx/widgets/Image.hpp>
+#include <touchgfx/widgets/TextAreaWithOneWildcard.hpp>
 
 class Screen1ViewBase : public touchgfx::View<Screen1Presenter>
 {
@@ -27,11 +28,49 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
-    touchgfx::ToggleButton toggleButton1;
-    touchgfx::Button button1;
+
+    /* Panel A – AC Input */
+    touchgfx::Box                      panelA;
+    touchgfx::Image                    iconA;
+    touchgfx::TextAreaWithOneWildcard  textA2;  // Voltage
+    touchgfx::TextAreaWithOneWildcard  textA3;  // Current
+
+    /* Panel B – DC Input */
+    touchgfx::Box                      panelB;
+    touchgfx::Image                    iconB;
+    touchgfx::TextAreaWithOneWildcard  textB2;  // Voltage
+    touchgfx::TextAreaWithOneWildcard  textB3;  // Current
+
+    /* Panel C – MPPT */
+    touchgfx::Box                      panelC;
+    touchgfx::Image                    iconC;
+    touchgfx::TextAreaWithOneWildcard  textC2;  // Voltage
+    touchgfx::TextAreaWithOneWildcard  textC3;  // Current
+
+    /* Panel D – Battery (spans all 3 rows) */
+    touchgfx::Box                      panelD;
+    touchgfx::TextAreaWithOneWildcard  textD_vc;     // Voltage / Current
+    touchgfx::Box                      socBarBg;     // SOC bar background
+    touchgfx::Box                      socBarFill;   // SOC bar fill
+    touchgfx::TextAreaWithOneWildcard  textD_soc;    // SOC percentage label
+    touchgfx::TextAreaWithOneWildcard  textD_alarm;  // Alarm status
+
+    /* Panel E – AC Output */
+    touchgfx::Box                      panelE;
+    touchgfx::Image                    iconE;
+    touchgfx::TextAreaWithOneWildcard  textE2;  // Voltage / Current
+    touchgfx::TextAreaWithOneWildcard  textE3;  // Power
+
+    /* Panel F – Fan / Temperature */
+    touchgfx::Box                      panelF;
+    touchgfx::Image                    iconF;
+    touchgfx::TextAreaWithOneWildcard  textF2;  // Box temperature
+    touchgfx::TextAreaWithOneWildcard  textF3;  // Other temperature
+
+    /* Panel G – Next screen button */
+    touchgfx::Button btnNext;
 
 private:
-
     /*
      * Callback Declarations
      */
@@ -41,7 +80,6 @@ private:
      * Callback Handler Declarations
      */
     void buttonCallbackHandler(const touchgfx::AbstractButton& src);
-
 };
 
 #endif // SCREEN1VIEWBASE_HPP
