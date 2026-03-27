@@ -18,10 +18,13 @@
     "Family": "STM32H7",
     "SubFamily": "STM32H750 Value line",
     "Platform": "m7",
+    "Toolchain": "STM32CubeIDE",
     "ProjectFile": "../HMA480272T016-ZHC.ioc",
     "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
     "OptionalComponents": [
+    ],
+    "AdditionalFeatures": [
     ]
   },
-  "Version": "4.20.0"
+  "Version": "4.26.1"
 }

@@ -30,14 +30,13 @@ HCD_HandleTypeDef hhcd_USB_OTG_FS;
 
 void MX_USB_OTG_FS_HCD_Init(void)
 {
+  /* USER CODE BEGIN USB_OTG_FS_HCD_Init 0 */
 
-  /* USER CODE BEGIN USB_OTG_FS_Init 0 */
+  /* USER CODE END USB_OTG_FS_HCD_Init 0 */
 
-  /* USER CODE END USB_OTG_FS_Init 0 */
+  /* USER CODE BEGIN USB_OTG_FS_HCD_Init 1 */
 
-  /* USER CODE BEGIN USB_OTG_FS_Init 1 */
-
-  /* USER CODE END USB_OTG_FS_Init 1 */
+  /* USER CODE END USB_OTG_FS_HCD_Init 1 */
   hhcd_USB_OTG_FS.Instance = USB_OTG_FS;
   hhcd_USB_OTG_FS.Init.Host_channels = 16;
   hhcd_USB_OTG_FS.Init.speed = HCD_SPEED_FULL;
@@ -48,9 +47,9 @@ void MX_USB_OTG_FS_HCD_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN USB_OTG_FS_Init 2 */
+  /* USER CODE BEGIN USB_OTG_FS_HCD_Init 2 */
 
-  /* USER CODE END USB_OTG_FS_Init 2 */
+  /* USER CODE END USB_OTG_FS_HCD_Init 2 */
 
 }
 
@@ -61,9 +60,9 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(hcdHandle->Instance==USB_OTG_FS)
   {
-  /* USER CODE BEGIN USB_OTG_FS_MspInit 0 */
+  /* USER CODE BEGIN USB_OTG_FS_HCD_MspInit 0 */
 
-  /* USER CODE END USB_OTG_FS_MspInit 0 */
+  /* USER CODE END USB_OTG_FS_HCD_MspInit 0 */
 
   /** Initializes the peripherals clock
   */
@@ -98,9 +97,9 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
 
     /* USB_OTG_FS clock enable */
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
-  /* USER CODE BEGIN USB_OTG_FS_MspInit 1 */
+  /* USER CODE BEGIN USB_OTG_FS_HCD_MspInit 1 */
 
-  /* USER CODE END USB_OTG_FS_MspInit 1 */
+  /* USER CODE END USB_OTG_FS_HCD_MspInit 1 */
   }
 }
 
@@ -109,9 +108,9 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hcdHandle)
 
   if(hcdHandle->Instance==USB_OTG_FS)
   {
-  /* USER CODE BEGIN USB_OTG_FS_MspDeInit 0 */
+  /* USER CODE BEGIN USB_OTG_FS_HCD_MspDeInit 0 */
 
-  /* USER CODE END USB_OTG_FS_MspDeInit 0 */
+  /* USER CODE END USB_OTG_FS_HCD_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_USB_OTG_FS_CLK_DISABLE();
 
@@ -122,12 +121,13 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hcdHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_12|GPIO_PIN_11);
 
-  /* USER CODE BEGIN USB_OTG_FS_MspDeInit 1 */
+  /* USER CODE BEGIN USB_OTG_FS_HCD_MspDeInit 1 */
 
-  /* USER CODE END USB_OTG_FS_MspDeInit 1 */
+  /* USER CODE END USB_OTG_FS_HCD_MspDeInit 1 */
   }
 }
 
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+

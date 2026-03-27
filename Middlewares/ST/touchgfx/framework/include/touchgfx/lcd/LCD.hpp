@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2022) STMicroelectronics.
+* Copyright (c) 2018(-2026) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.20.0 distribution.
+* This file is part of the TouchGFX 4.26.1 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -35,6 +35,7 @@
 #include <touchgfx/TextureMapTypes.hpp>
 #include <touchgfx/Unicode.hpp>
 #include <touchgfx/hal/Types.hpp>
+#include <touchgfx/hal/VectorFontRenderer.hpp>
 #include <touchgfx/lcd/DebugPrinter.hpp>
 
 namespace touchgfx
@@ -55,7 +56,7 @@ class LCD
 public:
     /** Initializes a new instance of the LCD class. */
     LCD()
-        : textureMapperClass(0)
+        : textureMapperClass(0), vectorFontRenderer(0)
     {
     }
 
@@ -81,6 +82,18 @@ public:
      *                      bitmap with faster fillrects.
      */
     virtual void drawPartialBitmap(const Bitmap& bitmap, int16_t x, int16_t y, const Rect& rect, uint8_t alpha = 255, bool useOptimized = true) = 0;
+
+    /**
+     * Draws all (or a part) of a \a bitmap, scaled to fit desired rect.
+     *
+     * @param  bitmap          The bitmap to draw.
+     * @param  blitRect        The destination area to draw the bitmap in, in absolute coordinates.
+     * @param  invalidatedArea The subarea of the destination area that should be redrawn, in
+     *                         relative coordinates to the destination area.
+     * @param  renderVariant   The rendering variant to use for the scaling operation.
+     * @param  alpha           Optional alpha value ranging from 0=invisible to 255=solid.
+     */
+    virtual void drawScaledBitmap(const Bitmap& bitmap, const Rect& blitRect, const Rect& invalidatedArea, RenderingVariant renderVariant, uint8_t alpha = 255);
 
     /**
      * Blits (directly copies) a block of data to the framebuffer, performing alpha blending
@@ -275,6 +288,16 @@ public:
         {
         }
     };
+
+    /**
+     * Set the vector font renderer
+     *
+     * @param renderer  The renderer to be used by LCD when dealing with vector fonts.
+     */
+    void setVectorFontRenderer(VectorFontRenderer* renderer)
+    {
+        vectorFontRenderer = renderer;
+    }
 
     /**
      * Draws the specified Unicode string. Breaks line on newline.
@@ -829,6 +852,7 @@ protected:
 
 private:
     DrawTextureMapScanLineBase* textureMapperClass; ///< Used during faster TextureMapper rendering
+    VectorFontRenderer* vectorFontRenderer;
 
     /** A draw string internal structure. */
     class DrawStringInternalStruct
@@ -846,9 +870,10 @@ private:
         {
         }
     };
-    void drawStringRTLLine(int16_t& offset, const Font* font, TextDirection textDirection, TextProvider& textProvider, const int numChars, const bool useEllipsis, DrawStringInternalStruct const* data);
-    void drawStringRTLInternal(int16_t& offset, const Font* font, const TextDirection textDirection, TextProvider& drawTextProvider, const int numChars, const uint16_t widthOfNumChars, DrawStringInternalStruct const* data);
-    bool drawStringInternal(uint16_t* frameBuffer, Rect const* widgetArea, int16_t widgetRectY, int16_t offset, const Rect& invalidatedArea, StringVisuals const* stringVisuals, const TextDirection textDirection, TextProvider& textProvider, const int numChars, bool useEllipsis);
+
+    void drawStringRTLLine(int16_t& offset, const Font* font, TextDirection textDirection, TextProvider& textProvider, const int numChars, const bool useEllipsis, const DrawStringInternalStruct* data);
+    void drawStringRTLInternal(int16_t& offset, const Font* font, const TextDirection textDirection, TextProvider& drawTextProvider, const int numChars, const uint16_t widthOfNumChars, const DrawStringInternalStruct* data);
+    bool drawStringInternal(uint16_t* frameBuffer, const Rect* widgetArea, int16_t widgetRectY, int16_t offset, const Rect& invalidatedArea, const StringVisuals* stringVisuals, const TextDirection textDirection, TextProvider& textProvider, const int numChars, bool useEllipsis);
 
     /** A wide text internal structure. */
     class WideTextInternalStruct
@@ -857,14 +882,16 @@ private:
         /**
          * Initializes a new instance of the WideTextInternalStruct class.
          *
-         * @param [in] _textProvider  The text provider.
-         * @param      _maxWidth      The maximum width.
-         * @param      _textDirection The text direction.
-         * @param      _font          The font.
-         * @param      action         The action.
+         * @param [in] textProvider The text provider.
+         * @param      width        The maximum width.
+         * @param      height       The height.
+         * @param      direction    The text direction.
+         * @param      _font        The font.
+         * @param      _linespace   The linespace.
+         * @param      action       The action.
          */
-        WideTextInternalStruct(TextProvider& _textProvider, uint16_t _maxWidth, TextDirection _textDirection, const Font* _font, WideTextAction action)
-            : currChar(0), textProvider(_textProvider), textDirection(_textDirection), wideTextAction(action), font(_font), maxWidth(_maxWidth), charsRead(0), width(0), charsReadAhead(0), widthAhead(0), widthWithoutWhiteSpaceAtEnd(0), ellipsisGlyphWidth(0), useEllipsis(false)
+        WideTextInternalStruct(TextProvider& textProvider, uint16_t width, uint16_t height, TextDirection direction, const Font* _font, int16_t _linespace, WideTextAction action)
+            : currChar(0), tp(textProvider), textDirection(direction), wideTextAction(action), font(_font), areaWidth(width), areaHeight(height), linespace(_linespace), charsRead(0), widthUsed(0), charsReadAhead(0), widthAhead(0), widthWithoutWhiteSpaceAtEnd(0), ellipsisGlyphWidth(0), useEllipsis(false)
         {
             if (wideTextAction != WIDE_TEXT_NONE)
             {
@@ -885,20 +912,11 @@ private:
         }
 
         /**
-         * Adds a word.
-         *
-         * @param  widthBeforeCurrChar        The width before curr character.
-         * @param  widthBeforeWhiteSpaceAtEnd The width before white space at end.
-         * @param  charsReadTooMany           The characters read too many.
-         */
-        void addWord(uint16_t widthBeforeCurrChar, uint16_t widthBeforeWhiteSpaceAtEnd, uint16_t charsReadTooMany);
-
-        /**
          * Gets string length for line.
          *
          * @param  useWideTextEllipsisFlag True to use wide text ellipsis flag.
          */
-        void getStringLengthForLine(bool useWideTextEllipsisFlag);
+        void scanStringLengthForLine();
 
         /**
          * Query if 'ch' is space.
@@ -913,9 +931,9 @@ private:
         }
 
         /**
-         * Gets curr character.
+         * Gets current character.
          *
-         * @return The curr character.
+         * @return The current character.
          */
         Unicode::UnicodeChar getCurrChar() const
         {
@@ -943,29 +961,33 @@ private:
         }
 
         /**
-         * Gets use ellipsis.
+         * Determines if we ellipsis was added at end of line.
          *
-         * @return True if it succeeds, false if it fails.
+         * @return True if it succeeds (not more text), false otherwise.
          */
-        bool getUseEllipsis() const
+        bool ellipsisAtEndOfLine() const
         {
             return useEllipsis;
         }
 
     private:
         Unicode::UnicodeChar currChar;
-        TextProvider& textProvider;
+        TextProvider& tp;
         TextDirection textDirection;
         WideTextAction wideTextAction;
         const Font* font;
-        uint16_t maxWidth;
+        uint16_t areaWidth;
+        uint16_t areaHeight;
+        int16_t linespace;
         uint16_t charsRead;
-        uint16_t width;
+        uint16_t widthUsed;
         uint16_t charsReadAhead;
         uint16_t widthAhead;
         uint16_t widthWithoutWhiteSpaceAtEnd;
         uint16_t ellipsisGlyphWidth;
         bool useEllipsis;
+
+        void addWord(uint16_t widthBeforeCurrChar, uint16_t widthBeforeWhiteSpaceAtEnd, uint16_t charsReadTooMany);
     };
 };
 

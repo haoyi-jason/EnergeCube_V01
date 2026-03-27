@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2022) STMicroelectronics.
+# Copyright (c) 2018(-2026) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.20.0 distribution.
+# This file is part of the TouchGFX 4.26.1 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -77,10 +77,26 @@ UPGRADE
     remap_global = ARGV.include?("yes") || ARGV.include?("remap") ? "yes" : "no"
     autohint_setting = "default"
 
-    data_format_a1 = ARGV.include?("A1") ? "A1" : ""
-    data_format_a2 = ARGV.include?("A2") ? "A2" : ""
-    data_format_a4 = ARGV.include?("A4") ? "A4" : ""
-    data_format_a8 = ARGV.include?("A8") ? "A8" : ""
+    #check gpu2d
+    require 'json'
+
+    target_config = File.join($calling_path, "target.config")
+    target_config_mod_time = nil
+    isGPU2D = false
+    if File.file?(target_config)
+      target_config_mod_time = [File.mtime(target_config), File.ctime(target_config)].max
+      tar_conf = JSON.parse(File.read(target_config))["target_configuration"] || {}
+      optional_components = tar_conf["optional_components"]
+      if optional_components
+        isGPU2D = optional_components.include?("GPU2D")
+      end
+    end
+
+    #data format
+    data_format_a1 = ARGV.include?("A1") || isGPU2D ? "A1" : ""
+    data_format_a2 = ARGV.include?("A2") || isGPU2D ? "A2" : ""
+    data_format_a4 = ARGV.include?("A4") || isGPU2D ? "A4" : ""
+    data_format_a8 = ARGV.include?("A8") || isGPU2D ? "A8" : ""
 
     generate_binary_translations = ARGV.include?("binary_translations") ? "yes" : "no"
     generate_binary_fonts = ARGV.include?("binary_fonts") ? "yes" : "no"
@@ -94,62 +110,83 @@ UPGRADE
 
     generate_font_format = "0" # 0 = normal font format, 1 = unmapped_flash_font_format
 
-    require 'json'
+    korean_fusion_fonts = []
+
+    copy_translations_to_ram = "no"
+    compressed_font_cache_size = 4096
+
 
     application_config = File.join($calling_path, "application.config")
+    application_config_mod_time = nil
     if File.file?(application_config)
+      application_config_mod_time = [File.mtime(application_config), File.ctime(application_config)].max
       text_conf = JSON.parse(File.read(application_config))["text_configuration"] || {}
 
+      cache_size = text_conf["cache_size"]
+      if cache_size
+        compressed_font_cache_size = cache_size
+      end
+
       remap = text_conf["remap"]
-      if !remap.nil?
+      if remap
         remap_global = remap == "yes" ? "yes" : "no"
       end
 
       autohint = text_conf["autohint"]
-      if !autohint.nil?
+      if autohint
         autohint_setting = (autohint == "no" || autohint == "force") ? autohint : "default"
       end
 
       a1 = text_conf["a1"]
-      if !a1.nil?
+      if a1
         data_format_a1 = a1 == "yes" ? "A1" : ""
       end
       a2 = text_conf["a2"]
-      if !a2.nil?
+      if a2
         data_format_a2 = a2 == "yes" ? "A2" : ""
       end
       a4 = text_conf["a4"]
-      if !a4.nil?
+      if a4
         data_format_a4 = a4 == "yes" ? "A4" : ""
       end
       a8 = text_conf["a8"]
-      if !a8.nil?
+      if a8
         data_format_a8 = a8 == "yes" ? "A8" : ""
       end
 
       binary_translations = text_conf["binary_translations"]
-      if !binary_translations.nil?
+      if binary_translations
         generate_binary_translations = binary_translations == "yes" ? "yes" : "no"
       end
 
       binary_fonts = text_conf["binary_fonts"]
-      if !binary_fonts.nil?
-        generate_binary_fonts = binary_fonts== "yes" ? "yes" : "no"
+      if binary_fonts
+        generate_binary_fonts = binary_fonts == "yes" ? "yes" : "no"
       end
 
       bpp = text_conf["framebuffer_bpp"]
-      if !bpp.nil?
+      if bpp
         framebuffer_bpp = "BPP" + bpp
       end
 
       font_format = text_conf["font_format"]
-      if !font_format.nil?
+      if font_format
         values = ["0", "1"]
         if values.include? font_format
           generate_font_format = font_format
         else
           puts "Font format #{font_format} not correct, using default: \"0\""
         end
+      end
+
+      fusion_fonts = text_conf["korean_fusion_fonts"]
+      if fusion_fonts
+        korean_fusion_fonts = fusion_fonts
+      end
+
+      translations_to_ram = text_conf["copy_translations_to_ram"]
+      if translations_to_ram
+        copy_translations_to_ram = translations_to_ram == "yes" ? "yes" : "no"
       end
     end
 
@@ -161,12 +198,17 @@ UPGRADE
       remap_global = "no"
     end
 
+    if copy_translations_to_ram == "yes" && remap_global == "yes"
+      puts "Disabling global remapping of identical texts, because translations (a language) are copied to RAM"
+      remap_global = "no"
+    end
+
     begin
       # 0. check text database file extension. Allow texts.xlsx as parameter, but require a texts.xml to be present
-      # 1. if text_converter is newer than compile_time.cache, remove all files under generated/texts and generated/fonts
+      # 1. if text_converter/font_converter is newer than compile_time.cache, remove all files under generated/texts and generated/fonts
       # 1b if generated/fonts/include/fonts/ApplicationFontProvider.hpp is missing, force generation of TextKeysAndLanguages.hpp
       # 1c if generated/texts/cache/options.cache contents differ from supplies arguments, force run
-      # 2. if generated/texts/cache/compile_time.cache is newer than xml file and fonts/ApplicationFontProvider.hpp exists then stop now
+      # 2. if generated/texts/cache/compile_time.cache is newer than (xml file and application.config file) and fonts/ApplicationFontProvider.hpp exists then stop now
       # 3. remove UnicodeList*.txt and CharSizes*.csv
       # 4. create #{@localization_output_path}/include/texts/ and #{@fonts_output_path}/include/fonts/
 
@@ -186,7 +228,7 @@ UPGRADE
       end
 
       # 1:
-      text_converter_time = [File.mtime( __FILE__), File.ctime( __FILE__ )].max;
+      text_converter_time = Dir[File.join(__dir__,'**','*'), font_convert_path].collect{|f| [File.mtime(f), File.ctime(f)]}.flatten.max
 
       if ((compile_time_exists = File.exists?("#{@localization_output_path}/cache/compile_time.cache")) && text_converter_time > File.mtime("#{@localization_output_path}/cache/compile_time.cache")) || !compile_time_exists
         #remove all files, as text converter is newer (probably upgraded to new TouchGFX)
@@ -215,7 +257,8 @@ UPGRADE
                       :binary_translations => generate_binary_translations,
                       :binary_fonts => generate_binary_fonts,
                       :font_format => generate_font_format,
-                      :framebuffer_bpp => framebuffer_bpp }.to_json
+                      :framebuffer_bpp => framebuffer_bpp,
+                      :fusion_fonts => fusion_fonts }.to_json
 
       if (options != new_options)
         force_run = true
@@ -226,13 +269,21 @@ UPGRADE
       # 2:
       if File.exists?("#{@localization_output_path}/cache/compile_time.cache") && !self.missing_files && !force_run
         mod_time = [File.mtime(file_name), File.ctime(file_name)].max
-        if mod_time < File.mtime("#{@localization_output_path}/cache/compile_time.cache")
+        cache_mod_time = File.mtime("#{@localization_output_path}/cache/compile_time.cache")
+        # exit if cache is newer than input file and cache is also newer than application.config and target.config
+        # No input changed since last run, so nothing to do...
+        if mod_time < cache_mod_time &&
+           (application_config_mod_time.nil? or application_config_mod_time < cache_mod_time) &&
+           (target_config_mod_time.nil? or target_config_mod_time < cache_mod_time)
           exit
         end
       end
 
       # 3:
       Dir["#{@fonts_output_path}/UnicodeList*.txt"].each do |text_file|
+        FileUtils.rm_f(text_file)
+      end
+      Dir["#{@fonts_output_path}/VectorUnicodeList*.txt"].each do |text_file|
         FileUtils.rm_f(text_file)
       end
       Dir["#{@fonts_output_path}/CharSizes*.csv"].each do |text_file|
@@ -246,16 +297,19 @@ UPGRADE
       require 'lib/emitters/fonts_cpp'
       require 'lib/generator'
       FontsCpp.font_convert = font_convert_path
-      Generator.new.run(file_name, @fonts_output_path, @localization_output_path, font_asset_path, data_format, remap_global, autohint_setting, generate_binary_translations, generate_binary_fonts, framebuffer_bpp, generate_font_format)
+      Generator.new.run(file_name, @fonts_output_path, @localization_output_path, font_asset_path, data_format, remap_global, autohint_setting, generate_binary_translations, generate_binary_fonts, framebuffer_bpp, generate_font_format, korean_fusion_fonts, copy_translations_to_ram, compressed_font_cache_size)
       #touch the cache compile time that we rely on in the makefile
       FileUtils.touch "#{@localization_output_path}/cache/compile_time.cache"
 
     rescue SystemExit => e
+      if e.status != 0
+        abort "" #Do not print anything, already done in original abort call
+      end
 
     rescue Exception => e
       STDERR.puts e
       STDERR.puts e.backtrace if ENV['DEBUG']
-      abort "An error occurred during text convertion"
+      abort "An error occurred during text conversion"
     end
   end
 end

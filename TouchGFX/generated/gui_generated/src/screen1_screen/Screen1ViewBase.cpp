@@ -3,181 +3,125 @@
 /*********************************************************************************/
 #include <gui_generated/screen1_screen/Screen1ViewBase.hpp>
 #include <touchgfx/Color.hpp>
-#include <BitmapDatabase.hpp>
+#include <images/BitmapDatabase.hpp>
 #include <texts/TextKeysAndLanguages.hpp>
-
-/*
- * Pixel coordinates – 480 × 272 display
- *
- * Left col:   x=4,   w=148
- * Centre col: x=156, w=164
- * Right col:  x=324, w=152
- *
- * Row A/E: y=4,   h=82
- * Row B/F: y=90,  h=82
- * Row C/G: y=176, h=82
- *
- * Panel D: x=156, y=4, w=164, h=258  (spans all 3 rows)
- *
- * Icon bitmap IDs – must be added in TouchGFX Designer / BitmapDatabase.hpp:
- *   BITMAP_ICON_AC_ID, BITMAP_ICON_DC_ID, BITMAP_ICON_MPPT_ID, BITMAP_ICON_FAN_ID
- *
- * Text key T_WILDCARD must exist in the TouchGFX texts system.
- */
 
 Screen1ViewBase::Screen1ViewBase() :
     buttonCallback(this, &Screen1ViewBase::buttonCallbackHandler)
 {
-    /* ── Background ───────────────────────────────────────────────────── */
     __background.setPosition(0, 0, 480, 272);
-    __background.setColor(touchgfx::Color::getColorFromRGB(10, 10, 10));
-
-    /* ── Panel A – AC Input (left, top row) ───────────────────────────── */
-    panelA.setPosition(4, 4, 148, 82);
-    panelA.setColor(touchgfx::Color::getColorFromRGB(30, 40, 60));
-
-    /* Icon – BITMAP_ICON_AC_ID must be defined in BitmapDatabase.hpp */
-    iconA.setXY(8, 12);
-    iconA.setBitmap(touchgfx::Bitmap(BITMAP_ICON_AC_ID));
-
-    textA2.setPosition(60, 10, 84, 30);
-    textA2.setColor(touchgfx::Color::getColorFromRGB(200, 230, 255));
-    // T_WILDCARD must exist in the TouchGFX texts system
-    textA2.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    textA3.setPosition(60, 44, 84, 30);
-    textA3.setColor(touchgfx::Color::getColorFromRGB(180, 210, 255));
-    textA3.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    /* ── Panel B – DC Input (left, mid row) ───────────────────────────── */
-    panelB.setPosition(4, 90, 148, 82);
-    panelB.setColor(touchgfx::Color::getColorFromRGB(30, 60, 40));
-
-    /* Icon – BITMAP_ICON_DC_ID must be defined in BitmapDatabase.hpp */
-    iconB.setXY(8, 98);
-    iconB.setBitmap(touchgfx::Bitmap(BITMAP_ICON_DC_ID));
-
-    textB2.setPosition(60, 96, 84, 30);
-    textB2.setColor(touchgfx::Color::getColorFromRGB(200, 255, 220));
-    textB2.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    textB3.setPosition(60, 130, 84, 30);
-    textB3.setColor(touchgfx::Color::getColorFromRGB(180, 255, 200));
-    textB3.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    /* ── Panel C – MPPT (left, bottom row) ───────────────────────────── */
-    panelC.setPosition(4, 176, 148, 82);
-    panelC.setColor(touchgfx::Color::getColorFromRGB(60, 50, 20));
-
-    /* Icon – BITMAP_ICON_MPPT_ID must be defined in BitmapDatabase.hpp */
-    iconC.setXY(8, 184);
-    iconC.setBitmap(touchgfx::Bitmap(BITMAP_ICON_MPPT_ID));
-
-    textC2.setPosition(60, 182, 84, 30);
-    textC2.setColor(touchgfx::Color::getColorFromRGB(255, 240, 180));
-    textC2.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    textC3.setPosition(60, 216, 84, 30);
-    textC3.setColor(touchgfx::Color::getColorFromRGB(255, 230, 160));
-    textC3.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    /* ── Panel D – Battery (centre, spans all rows) ───────────────────── */
-    panelD.setPosition(156, 4, 164, 258);
-    panelD.setColor(touchgfx::Color::getColorFromRGB(20, 20, 50));
-
-    textD_vc.setPosition(164, 14, 148, 30);
-    textD_vc.setColor(touchgfx::Color::getColorFromRGB(220, 220, 255));
-    textD_vc.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    /* SOC bar: bg full width, fill starts at same position */
-    socBarBg.setPosition(164, 60, 148, 20);
-    socBarBg.setColor(touchgfx::Color::getColorFromRGB(50, 50, 80));
-
-    socBarFill.setPosition(164, 60, 0, 20);   // width set dynamically
-    socBarFill.setColor(touchgfx::Color::getColorFromRGB(0, 200, 100));
-
-    textD_soc.setPosition(164, 84, 148, 30);
-    textD_soc.setColor(touchgfx::Color::getColorFromRGB(180, 255, 180));
-    textD_soc.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    textD_alarm.setPosition(164, 220, 148, 30);
-    textD_alarm.setColor(touchgfx::Color::getColorFromRGB(0, 255, 0));
-    textD_alarm.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    /* ── Panel E – AC Output (right, top row) ─────────────────────────── */
-    panelE.setPosition(324, 4, 152, 82);
-    panelE.setColor(touchgfx::Color::getColorFromRGB(40, 20, 60));
-
-    /* Icon – BITMAP_ICON_AC_ID reused for AC output */
-    iconE.setXY(328, 12);
-    iconE.setBitmap(touchgfx::Bitmap(BITMAP_ICON_AC_ID));
-
-    textE2.setPosition(378, 10, 94, 30);
-    textE2.setColor(touchgfx::Color::getColorFromRGB(230, 200, 255));
-    textE2.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    textE3.setPosition(378, 44, 94, 30);
-    textE3.setColor(touchgfx::Color::getColorFromRGB(210, 180, 255));
-    textE3.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    /* ── Panel F – Fan/Temperature (right, mid row) ───────────────────── */
-    panelF.setPosition(324, 90, 152, 82);
-    panelF.setColor(touchgfx::Color::getColorFromRGB(20, 50, 60));
-
-    /* Icon – BITMAP_ICON_FAN_ID must be defined in BitmapDatabase.hpp */
-    iconF.setXY(328, 98);
-    iconF.setBitmap(touchgfx::Bitmap(BITMAP_ICON_FAN_ID));
-
-    textF2.setPosition(378, 96, 94, 30);
-    textF2.setColor(touchgfx::Color::getColorFromRGB(180, 230, 255));
-    textF2.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    textF3.setPosition(378, 130, 94, 30);
-    textF3.setColor(touchgfx::Color::getColorFromRGB(160, 220, 255));
-    textF3.setTypedText(touchgfx::TypedText(T_WILDCARD));
-
-    /* ── Panel G – Next screen button (right, bottom row) ─────────────── */
-    btnNext.setXY(324, 176);
-    btnNext.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID),
-                       touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
-    btnNext.setAction(buttonCallback);
-
-    /* ── Add all widgets (back to front) ──────────────────────────────── */
+    __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     add(__background);
 
-    add(panelA);
-    add(iconA);
-    add(textA2);
-    add(textA3);
+    toggleButton1.setXY(176, 117);
+    toggleButton1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_TOGGLEBARS_TOGGLE_ROUND_LARGE_BUTTON_OFF_ID), touchgfx::Bitmap(BITMAP_BLUE_TOGGLEBARS_TOGGLE_ROUND_LARGE_BUTTON_ON_ID));
+    add(toggleButton1);
 
-    add(panelB);
-    add(iconB);
-    add(textB2);
+    button1.setXY(155, 155);
+    button1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID), touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
+    button1.setAction(buttonCallback);
+    add(button1);
+
+    textB3.setXY(6, 84);
+    textB3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textB3.setLinespacing(0);
+    textB3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_BI87));
     add(textB3);
 
-    add(panelC);
-    add(iconC);
+    textB2.setXY(0, 50);
+    textB2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textB2.setLinespacing(0);
+    textB2.setTypedText(touchgfx::TypedText(T_TEXTB2));
+    add(textB2);
+
+    textA2.setXY(0, 20);
+    textA2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textA2.setLinespacing(0);
+    textA2.setTypedText(touchgfx::TypedText(T_TEXTB2));
+    add(textA2);
+
+    textA3.setXY(0, 0);
+    textA3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textA3.setLinespacing(0);
+    textA3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_TJ6J));
+    add(textA3);
+
+    textC2.setXY(0, 0);
+    textC2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textC2.setLinespacing(0);
+    textC2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_LE6V));
     add(textC2);
+
+    textC3.setXY(0, 0);
+    textC3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textC3.setLinespacing(0);
+    textC3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_DMZ4));
     add(textC3);
 
-    add(panelD);
-    add(textD_vc);
-    add(socBarBg);
-    add(socBarFill);
-    add(textD_soc);
-    add(textD_alarm);
-
-    add(panelE);
-    add(iconE);
+    textE2.setXY(0, 0);
+    textE2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textE2.setLinespacing(0);
+    textE2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_JB6G));
     add(textE2);
+
+    textE3.setXY(0, 0);
+    textE3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textE3.setLinespacing(0);
+    textE3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_G885));
     add(textE3);
 
-    add(panelF);
-    add(iconF);
+    textF2.setXY(0, 0);
+    textF2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textF2.setLinespacing(0);
+    textF2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_PRQJ));
     add(textF2);
+
+    textF3.setXY(0, 0);
+    textF3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textF3.setLinespacing(0);
+    textF3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_10O6));
     add(textF3);
 
-    add(btnNext);
+    textD_vc.setXY(0, 0);
+    textD_vc.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textD_vc.setLinespacing(0);
+    textD_vc.setTypedText(touchgfx::TypedText(T___SINGLEUSE_IR5Z));
+    add(textD_vc);
+
+    textD_soc.setXY(0, 0);
+    textD_soc.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textD_soc.setLinespacing(0);
+    textD_soc.setTypedText(touchgfx::TypedText(T___SINGLEUSE_ZP2I));
+    add(textD_soc);
+
+    textD_alarm.setXY(0, 0);
+    textD_alarm.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textD_alarm.setLinespacing(0);
+    textD_alarm.setTypedText(touchgfx::TypedText(T___SINGLEUSE_JB2V));
+    add(textD_alarm);
+
+    socBarFill.setXY(138, 112);
+    socBarFill.setProgressIndicatorPosition(0, 0, 300, 10);
+    socBarFill.setRange(0, 100);
+    socBarFill.setDirection(touchgfx::AbstractDirectionProgress::RIGHT);
+    socBarFill.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BOXPROGRESS_NORMAL_MEDIUM_ID));
+    socBarFill.setColor(touchgfx::Color::getColorFromRGB(0, 240, 255));
+    socBarFill.setValue(60);
+    add(socBarFill);
+
+    socBarBg.setXY(0, 0);
+    socBarBg.setProgressIndicatorPosition(0, 0, 300, 10);
+    socBarBg.setRange(0, 100);
+    socBarBg.setDirection(touchgfx::AbstractDirectionProgress::RIGHT);
+    socBarBg.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BOXPROGRESS_NORMAL_MEDIUM_ID));
+    socBarBg.setColor(touchgfx::Color::getColorFromRGB(0, 240, 255));
+    socBarBg.setValue(60);
+    add(socBarBg);
+}
+
+Screen1ViewBase::~Screen1ViewBase()
+{
+
 }
 
 void Screen1ViewBase::setupScreen()
@@ -187,10 +131,11 @@ void Screen1ViewBase::setupScreen()
 
 void Screen1ViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
 {
-    if (&src == &btnNext)
+    if (&src == &button1)
     {
-        // When btnNext clicked change screen to Screen2
-        // Go to Screen2 with screen transition towards East
+        //Interaction1
+        //When button1 clicked change screen to Screen2
+        //Go to Screen2 with screen transition towards East
         application().gotoScreen2ScreenCoverTransitionEast();
     }
 }

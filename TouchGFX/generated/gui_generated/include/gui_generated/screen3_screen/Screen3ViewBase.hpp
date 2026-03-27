@@ -13,9 +13,8 @@ class Screen3ViewBase : public touchgfx::View<Screen3Presenter>
 {
 public:
     Screen3ViewBase();
-    virtual ~Screen3ViewBase() {}
+    virtual ~Screen3ViewBase();
     virtual void setupScreen();
-    virtual void tearDownScreen() {}
 
 protected:
     FrontendApplication& application() {
@@ -26,6 +25,9 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
+
+private:
+
 };
 
 #endif // SCREEN3VIEWBASE_HPP

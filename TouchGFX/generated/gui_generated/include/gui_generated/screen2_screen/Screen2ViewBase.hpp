@@ -14,7 +14,7 @@ class Screen2ViewBase : public touchgfx::View<Screen2Presenter>
 {
 public:
     Screen2ViewBase();
-    virtual ~Screen2ViewBase() {}
+    virtual ~Screen2ViewBase();
     virtual void setupScreen();
 
 protected:

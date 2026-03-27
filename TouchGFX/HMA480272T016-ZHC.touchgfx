@@ -12,18 +12,187 @@
             "Width": 128,
             "Height": 38,
             "Pressed": "__designer\\Blue_Togglebars_Toggle_round_large_button_ON.png",
-            "Released": "__designer\\Blue_Togglebars_Toggle_round_large_button_OFF.png",
-            "Style": "Style4"
+            "Released": "__designer\\Blue_Togglebars_Toggle_round_large_button_OFF.png"
           },
           {
             "Type": "Button",
             "Name": "button1",
             "X": 155,
+            "Y": 155,
             "Width": 170,
             "Height": 60,
             "Pressed": "__designer\\Blue_Buttons_Round_Edge_small_pressed.png",
-            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png",
-            "Style": "Style4"
+            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png"
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textB3",
+            "X": 6,
+            "Y": 84,
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_BI87",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textB2",
+            "Y": 50,
+            "Width": 92,
+            "Height": 20,
+            "TextId": "textB2",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textA2",
+            "Y": 20,
+            "Width": 92,
+            "Height": 20,
+            "TextId": "textB2",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textA3",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_TJ6J",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textC2",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_LE6V",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textC3",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_DMZ4",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textE2",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_JB6G",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textE3",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_G885",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textF2",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_PRQJ",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textF3",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_10O6",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textD_vc",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_IR5Z",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textD_soc",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_ZP2I",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textD_alarm",
+            "Width": 178,
+            "Height": 20,
+            "TextId": "__SingleUse_JB2V",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "BoxProgress",
+            "Name": "socBarFill",
+            "X": 138,
+            "Y": 112,
+            "Width": 300,
+            "Height": 10,
+            "Color": {
+              "Green": 240,
+              "Blue": 255
+            },
+            "Direction": "Right",
+            "Preset": "alternate_theme\\presets\\boxprogress\\normal\\medium_active.json",
+            "FileNameBackground": "__generated\\alternate_theme_images_widgets_boxprogress_normal_medium.png",
+            "IndicatorPositionWidth": 300,
+            "IndicatorPositionHeight": 10,
+            "ProgressRangeMax": 100,
+            "ProgressInitialValue": 60
+          },
+          {
+            "Type": "BoxProgress",
+            "Name": "socBarBg",
+            "Width": 300,
+            "Height": 10,
+            "Color": {
+              "Green": 240,
+              "Blue": 255
+            },
+            "Direction": "Right",
+            "Preset": "alternate_theme\\presets\\boxprogress\\normal\\medium_active.json",
+            "FileNameBackground": "__generated\\alternate_theme_images_widgets_boxprogress_normal_medium.png",
+            "IndicatorPositionWidth": 300,
+            "IndicatorPositionHeight": 10,
+            "ProgressRangeMax": 100,
+            "ProgressInitialValue": 60
           }
         ],
         "Interactions": [
@@ -53,8 +222,7 @@
             "Width": 170,
             "Height": 60,
             "Pressed": "__designer\\Blue_Buttons_Round_Edge_small_pressed.png",
-            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png",
-            "Style": "Style4"
+            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png"
           }
         ],
         "Interactions": [
@@ -72,6 +240,11 @@
             }
           }
         ]
+      },
+      {
+        "Name": "Screen3",
+        "Components": [],
+        "Interactions": []
       }
     ],
     "CustomContainerDefinitions": [],
@@ -83,7 +256,6 @@
     "SelectedColorDepth": 24,
     "StartupScreenName": "Screen1",
     "SelectedStartupLanguage": "GB",
-    "Skin": "Blue",
     "TouchGfxPath": "../Middlewares/ST/touchgfx",
     "UIPath": ".",
     "AvailableColorDepths": [
@@ -120,10 +292,13 @@
     "PortraitSkinY": 0,
     "DisplayOrientation": "Landscape",
     "Family": "STM32H7",
+    "SubFamily": "STM32H750 Value line",
+    "Toolchain": "STM32CubeIDE",
     "Platform": "m7",
     "ProjectFile": "../HMA480272T016-ZHC.ioc",
     "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
-    "OptionalComponents": []
+    "OptionalComponents": [],
+    "AdditionalFeatures": []
   },
-  "Version": "4.26.0"
+  "Version": "4.26.1"
 }

@@ -4,6 +4,7 @@
 #ifndef TOUCHGFX_DIRECTFRAMEBUFFERVIDEOCONTROLLER_HPP
 #define TOUCHGFX_DIRECTFRAMEBUFFERVIDEOCONTROLLER_HPP
 
+#include <touchgfx/transforms/DisplayTransformation.hpp>
 #include <touchgfx/widgets/VideoWidget.hpp>
 #include <simulator/video/MJPEGDecoder.hpp>
 #include <string.h>
@@ -218,7 +219,7 @@ public:
     {
         assert(handle < no_streams);
 
-        if (output_format != Bitmap::RGB565 && output_format != Bitmap::RGB888)
+        if (output_format != Bitmap::RGB565 && output_format != Bitmap::RGB888 && output_format != Bitmap::ARGB8888)
         {
             return;
         }
@@ -226,10 +227,25 @@ public:
         if (mjpegDecoders[handle]->hasVideo())
         {
             uint8_t* wbuf = (uint8_t*)touchgfx::HAL::getInstance()->lockFrameBuffer();
-            const touchgfx::Rect& absolute = widget.getAbsoluteRect();
+            touchgfx::Rect absolute = widget.getAbsoluteRect();
+            DisplayTransformation::transformDisplayToFrameBuffer(absolute);
 
             // Get frame buffer pointer to upper left of widget in framebuffer coordinates
-            wbuf += (absolute.x + absolute.y * touchgfx::HAL::FRAME_BUFFER_WIDTH) * ((output_format == Bitmap::RGB565) ? 2 : 3);
+            switch(output_format)
+            {
+                case Bitmap::RGB565:
+                    wbuf += (absolute.x + absolute.y * touchgfx::HAL::FRAME_BUFFER_WIDTH) * 2;
+                    break;
+                case Bitmap::RGB888:
+                    wbuf += (absolute.x + absolute.y * touchgfx::HAL::FRAME_BUFFER_WIDTH) * 3;
+                    break;
+                case Bitmap::ARGB8888:
+                    wbuf += (absolute.x + absolute.y * touchgfx::HAL::FRAME_BUFFER_WIDTH) * 4;
+                    break;
+                default:
+                    break;
+            }
+
             // Decode relevant part of the frame to the framebuffer
             mjpegDecoders[handle]->decodeFrame(invalidatedArea, wbuf, touchgfx::HAL::FRAME_BUFFER_WIDTH);
             // Release frame buffer
@@ -264,7 +280,7 @@ public:
         return stream.isPlaying;
     }
 
-    void setFrameRateCompensation(const bool allow)
+    void setVideoFrameRateCompensation(const bool allow)
     {
         allowSkipFrames = allow;
     }

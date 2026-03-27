@@ -11,6 +11,11 @@ Screen3ViewBase::Screen3ViewBase()
     add(__background);
 }
 
+Screen3ViewBase::~Screen3ViewBase()
+{
+
+}
+
 void Screen3ViewBase::setupScreen()
 {
 

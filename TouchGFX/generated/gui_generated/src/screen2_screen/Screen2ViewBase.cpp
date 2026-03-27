@@ -3,21 +3,24 @@
 /*********************************************************************************/
 #include <gui_generated/screen2_screen/Screen2ViewBase.hpp>
 #include <touchgfx/Color.hpp>
-#include <BitmapDatabase.hpp>
+#include <images/BitmapDatabase.hpp>
 
 Screen2ViewBase::Screen2ViewBase() :
     buttonCallback(this, &Screen2ViewBase::buttonCallbackHandler)
 {
-
     __background.setPosition(0, 0, 480, 272);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    add(__background);
 
     button1.setXY(155, 212);
     button1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID), touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
     button1.setAction(buttonCallback);
-
-    add(__background);
     add(button1);
+}
+
+Screen2ViewBase::~Screen2ViewBase()
+{
+
 }
 
 void Screen2ViewBase::setupScreen()

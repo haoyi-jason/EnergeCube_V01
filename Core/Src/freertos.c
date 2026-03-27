@@ -21,7 +21,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
-#include "cmsis_os.h"
+#include "FreeRTOS.h"
+#include "cmsis_os2.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -54,14 +55,6 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 4096 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* USER CODE BEGIN AppTask_variables */
-osThreadId_t appTaskHandle;
-const osThreadAttr_t appTask_attributes = {
-  .name = "AppTask",
-  .stack_size = 2048 * 4,
-  .priority = (osPriority_t) osPriorityBelowNormal,
-};
-/* USER CODE END AppTask_variables */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -104,7 +97,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  appTaskHandle = osThreadNew(AppTask, NULL, &appTask_attributes);
+  //appTaskHandle = osThreadNew(AppTask, NULL, &appTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */

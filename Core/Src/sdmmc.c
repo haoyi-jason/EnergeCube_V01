@@ -45,6 +45,10 @@ void MX_SDMMC1_MMC_Init(void)
   hmmc1.Init.BusWide = SDMMC_BUS_WIDE_8B;
   hmmc1.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
   hmmc1.Init.ClockDiv = 0;
+  if (HAL_MMC_Init(&hmmc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN SDMMC1_Init 2 */
 
   /* USER CODE END SDMMC1_Init 2 */
@@ -68,6 +72,10 @@ void MX_SDMMC2_SD_Init(void)
   hsd2.Init.BusWide = SDMMC_BUS_WIDE_4B;
   hsd2.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
   hsd2.Init.ClockDiv = 0;
+  if (HAL_SD_Init(&hsd2) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN SDMMC2_Init 2 */
 
   /* USER CODE END SDMMC2_Init 2 */
@@ -239,3 +247,4 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* sdHandle)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+
