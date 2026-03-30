@@ -29,7 +29,7 @@
             "Name": "textB3",
             "X": 6,
             "Y": 84,
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_BI87",
             "TextRotation": "0",
@@ -61,7 +61,7 @@
           {
             "Type": "TextArea",
             "Name": "textA3",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_TJ6J",
             "TextRotation": "0",
@@ -71,7 +71,7 @@
           {
             "Type": "TextArea",
             "Name": "textC2",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_LE6V",
             "TextRotation": "0",
@@ -81,7 +81,7 @@
           {
             "Type": "TextArea",
             "Name": "textC3",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_DMZ4",
             "TextRotation": "0",
@@ -91,7 +91,7 @@
           {
             "Type": "TextArea",
             "Name": "textE2",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_JB6G",
             "TextRotation": "0",
@@ -101,7 +101,7 @@
           {
             "Type": "TextArea",
             "Name": "textE3",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_G885",
             "TextRotation": "0",
@@ -111,7 +111,7 @@
           {
             "Type": "TextArea",
             "Name": "textF2",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_PRQJ",
             "TextRotation": "0",
@@ -121,7 +121,7 @@
           {
             "Type": "TextArea",
             "Name": "textF3",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_10O6",
             "TextRotation": "0",
@@ -131,7 +131,7 @@
           {
             "Type": "TextArea",
             "Name": "textD_vc",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_IR5Z",
             "TextRotation": "0",
@@ -141,7 +141,7 @@
           {
             "Type": "TextArea",
             "Name": "textD_soc",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_ZP2I",
             "TextRotation": "0",
@@ -151,7 +151,7 @@
           {
             "Type": "TextArea",
             "Name": "textD_alarm",
-            "Width": 178,
+            "Width": 92,
             "Height": 20,
             "TextId": "__SingleUse_JB2V",
             "TextRotation": "0",
@@ -262,7 +262,8 @@
       24
     ],
     "AvailableLCDs": {
-      "24": "LCD24bpp"
+      "24": "LCD24bpp",
+      "16": "LCD16bpp"
     },
     "AvailableSections": [
       "ExtFlashSection",
