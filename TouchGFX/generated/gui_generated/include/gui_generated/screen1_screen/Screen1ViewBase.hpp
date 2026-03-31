@@ -8,8 +8,6 @@
 #include <mvp/View.hpp>
 #include <gui/screen1_screen/Screen1Presenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
-#include <touchgfx/widgets/ToggleButton.hpp>
-#include <touchgfx/widgets/Button.hpp>
 #include <touchgfx/widgets/TextAreaWithWildcard.hpp>
 #include <touchgfx/containers/progress_indicators/BoxProgress.hpp>
 
@@ -29,8 +27,6 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
-    touchgfx::ToggleButton toggleButton1;
-    touchgfx::Button button1;
     touchgfx::TextAreaWithOneWildcard textB3;
     touchgfx::TextAreaWithOneWildcard textB2;
     touchgfx::TextAreaWithOneWildcard textA2;
@@ -48,16 +44,6 @@ protected:
     touchgfx::BoxProgress socBarBg;
 
 private:
-
-    /*
-     * Callback Declarations
-     */
-    touchgfx::Callback<Screen1ViewBase, const touchgfx::AbstractButton&> buttonCallback;
-
-    /*
-     * Callback Handler Declarations
-     */
-    void buttonCallbackHandler(const touchgfx::AbstractButton& src);
 
 };
 

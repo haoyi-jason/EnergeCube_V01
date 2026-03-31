@@ -14,11 +14,6 @@ public:
     {
         model = m;
     }
-
-    virtual void energyDataUpdated(const Model::EnergyData& data) {}
-
-    virtual void mainDataUpdated(const Model::MainScreenData& data) {}
-
 protected:
     Model* model;
 };

@@ -25,9 +25,7 @@ public:
      */
     virtual void deactivate();
 
-    virtual ~Screen2Presenter() {};
-
-    virtual void energyDataUpdated(const Model::EnergyData& data);
+    virtual ~Screen2Presenter() {}
 
 private:
     Screen2Presenter();

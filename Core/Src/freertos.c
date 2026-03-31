@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "app_task.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,7 +97,6 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  //appTaskHandle = osThreadNew(AppTask, NULL, &appTask_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -126,20 +125,6 @@ __weak void TouchGFX_Task(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
-/**
-  * @brief  Application task — 100 ms periodic tick for energy model simulation.
-  * @param  argument: Not used
-  * @retval None
-  */
-void AppTask(void *argument)
-{
-  for (;;)
-  {
-    model_tick_from_c();
-    osDelay(100); /* 100 ms period */
-  }
-}
 
 /* USER CODE END Application */
 

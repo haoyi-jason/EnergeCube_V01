@@ -8,7 +8,6 @@
 #include <mvp/View.hpp>
 #include <gui/screen2_screen/Screen2Presenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
-#include <touchgfx/widgets/Button.hpp>
 
 class Screen2ViewBase : public touchgfx::View<Screen2Presenter>
 {
@@ -26,19 +25,8 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
-    touchgfx::Button button1;
 
 private:
-
-    /*
-     * Callback Declarations
-     */
-    touchgfx::Callback<Screen2ViewBase, const touchgfx::AbstractButton&> buttonCallback;
-
-    /*
-     * Callback Handler Declarations
-     */
-    void buttonCallbackHandler(const touchgfx::AbstractButton& src);
 
 };
 

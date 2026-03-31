@@ -25,11 +25,7 @@ public:
      */
     virtual void deactivate();
 
-    virtual ~Screen3Presenter() {};
-
-    virtual void energyDataUpdated(const Model::EnergyData& data);
-
-    void toggleChargeEnable();
+    virtual ~Screen3Presenter() {}
 
 private:
     Screen3Presenter();

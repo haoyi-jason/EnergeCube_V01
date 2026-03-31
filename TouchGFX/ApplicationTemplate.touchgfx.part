@@ -1,7 +1,7 @@
 
 {
   "Application": {
-    "Name": "HMA480272T016-ZHC",
+    "Name": "EnergeCube_V01",
     "TouchGfxPath": "../Middlewares/ST/touchgfx",
     "AvailableColorDepths": [ 24 ],
     "AvailableLCDs":
@@ -19,7 +19,7 @@
     "SubFamily": "STM32H750 Value line",
     "Platform": "m7",
     "Toolchain": "STM32CubeIDE",
-    "ProjectFile": "../HMA480272T016-ZHC.ioc",
+    "ProjectFile": "../EnergeCube_V01.ioc",
     "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
     "OptionalComponents": [
     ],

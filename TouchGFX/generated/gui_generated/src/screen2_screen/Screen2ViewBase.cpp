@@ -3,19 +3,12 @@
 /*********************************************************************************/
 #include <gui_generated/screen2_screen/Screen2ViewBase.hpp>
 #include <touchgfx/Color.hpp>
-#include <images/BitmapDatabase.hpp>
 
-Screen2ViewBase::Screen2ViewBase() :
-    buttonCallback(this, &Screen2ViewBase::buttonCallbackHandler)
+Screen2ViewBase::Screen2ViewBase()
 {
     __background.setPosition(0, 0, 480, 272);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     add(__background);
-
-    button1.setXY(155, 212);
-    button1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID), touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
-    button1.setAction(buttonCallback);
-    add(button1);
 }
 
 Screen2ViewBase::~Screen2ViewBase()
@@ -26,15 +19,4 @@ Screen2ViewBase::~Screen2ViewBase()
 void Screen2ViewBase::setupScreen()
 {
 
-}
-
-void Screen2ViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
-{
-    if (&src == &button1)
-    {
-        //Interaction1
-        //When button1 clicked change screen to Screen1
-        //Go to Screen1 with screen transition towards West
-        application().gotoScreen1ScreenCoverTransitionWest();
-    }
 }

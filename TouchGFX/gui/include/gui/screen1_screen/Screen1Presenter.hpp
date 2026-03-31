@@ -25,12 +25,7 @@ public:
      */
     virtual void deactivate();
 
-    virtual ~Screen1Presenter() {};
-
-    void notifyScreenSetup();
-
-    virtual void energyDataUpdated(const Model::EnergyData& data);
-    virtual void mainDataUpdated(const Model::MainScreenData& data);
+    virtual ~Screen1Presenter() {}
 
 private:
     Screen1Presenter();
