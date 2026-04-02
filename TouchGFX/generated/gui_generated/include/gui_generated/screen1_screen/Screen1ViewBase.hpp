@@ -8,14 +8,14 @@
 #include <mvp/View.hpp>
 #include <gui/screen1_screen/Screen1Presenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
-#include <touchgfx/widgets/TextAreaWithWildcard.hpp>
-#include <touchgfx/containers/progress_indicators/BoxProgress.hpp>
+#include <touchgfx/widgets/ToggleButton.hpp>
+#include <touchgfx/widgets/Button.hpp>
 
 class Screen1ViewBase : public touchgfx::View<Screen1Presenter>
 {
 public:
     Screen1ViewBase();
-    virtual ~Screen1ViewBase();
+    virtual ~Screen1ViewBase() {}
     virtual void setupScreen();
 
 protected:
@@ -27,23 +27,20 @@ protected:
      * Member Declarations
      */
     touchgfx::Box __background;
-    touchgfx::TextAreaWithOneWildcard textB3;
-    touchgfx::TextAreaWithOneWildcard textB2;
-    touchgfx::TextAreaWithOneWildcard textA2;
-    touchgfx::TextAreaWithOneWildcard textA3;
-    touchgfx::TextAreaWithOneWildcard textC2;
-    touchgfx::TextAreaWithOneWildcard textC3;
-    touchgfx::TextAreaWithOneWildcard textE2;
-    touchgfx::TextAreaWithOneWildcard textE3;
-    touchgfx::TextAreaWithOneWildcard textF2;
-    touchgfx::TextAreaWithOneWildcard textF3;
-    touchgfx::TextAreaWithOneWildcard textD_vc;
-    touchgfx::TextAreaWithOneWildcard textD_soc;
-    touchgfx::TextAreaWithOneWildcard textD_alarm;
-    touchgfx::BoxProgress socBarFill;
-    touchgfx::BoxProgress socBarBg;
+    touchgfx::ToggleButton toggleButton1;
+    touchgfx::Button button1;
 
 private:
+
+    /*
+     * Callback Declarations
+     */
+    touchgfx::Callback<Screen1ViewBase, const touchgfx::AbstractButton&> buttonCallback;
+
+    /*
+     * Callback Handler Declarations
+     */
+    void buttonCallbackHandler(const touchgfx::AbstractButton& src);
 
 };
 

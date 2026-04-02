@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -81,8 +81,7 @@ public:
     virtual void handleGestureEvent(const GestureEvent& event);
 
     /**
-     * Sets Callback which will be called when the ScrollWheel animates to a new item or the
-     * current item.
+     * Sets Callback which will be called when the ScrollWheel animates to a new item.
      *
      * @param [in] callback The callback.
      */

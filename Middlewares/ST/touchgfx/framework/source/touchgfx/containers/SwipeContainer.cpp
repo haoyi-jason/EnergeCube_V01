@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -28,8 +28,6 @@ SwipeContainer::SwipeContainer()
       animateDistance(0),
       startX(0),
       endElasticWidth(30),
-      animationDuration(20),
-      pageDelta(0),
       pages(EAST),
       pageIndicator()
 {
@@ -77,13 +75,14 @@ void SwipeContainer::remove(Drawable& page)
             const uint8_t numPages = getNumberOfPages();
             if (numPages == 0)
             {
-                invalidate();
                 setWidthHeight(0, 0);
             }
             else
             {
+                pageIndicator.invalidateContent();
                 const uint8_t curPage = getSelectedPage();
                 setSelectedPage(MIN(curPage, numPages - 1));
+                pageIndicator.invalidateContent();
             }
             return;
         }
@@ -161,18 +160,6 @@ void SwipeContainer::handleTickEvent()
     else if (currentState == ANIMATE_RIGHT)
     {
         animateRight();
-    }
-    else if (currentState == ANIMATE_LEFT_WITH_BUTTON)
-    {
-        animateLeftWithButton();
-    }
-    else if (currentState == ANIMATE_RIGHT_WITH_BUTTON)
-    {
-        animateRightWithButton();
-    }
-    else if (currentState == ANIMATE_TO_PAGE)
-    {
-        animateToPage();
     }
 }
 
@@ -274,11 +261,11 @@ void SwipeContainer::adjustPages()
 
 void SwipeContainer::animateSwipeCancelledLeft()
 {
-    const uint8_t duration = 14;
+    uint8_t duration = 14;
 
     if (animationCounter <= duration)
     {
-        const int16_t delta = EasingEquations::backEaseOut(animationCounter, 0, -animateDistance, duration);
+        int16_t delta = EasingEquations::backEaseOut(animationCounter, 0, -animateDistance, duration);
         dragX = animateDistance + delta;
 
         adjustPages();
@@ -296,11 +283,11 @@ void SwipeContainer::animateSwipeCancelledLeft()
 
 void SwipeContainer::animateSwipeCancelledRight()
 {
-    const uint8_t duration = 14;
+    uint8_t duration = 14;
 
     if (animationCounter <= duration)
     {
-        const int16_t delta = EasingEquations::backEaseOut(animationCounter, 0, animateDistance, duration);
+        int16_t delta = EasingEquations::backEaseOut(animationCounter, 0, animateDistance, duration);
         dragX = animateDistance - delta;
 
         adjustPages();
@@ -318,11 +305,11 @@ void SwipeContainer::animateSwipeCancelledRight()
 
 void SwipeContainer::animateLeft()
 {
-    const uint8_t duration = 10;
+    uint8_t duration = 10;
 
     if (animationCounter <= duration)
     {
-        const int16_t delta = EasingEquations::cubicEaseOut(animationCounter, 0, getWidth() + animateDistance, duration);
+        int16_t delta = EasingEquations::cubicEaseOut(animationCounter, 0, getWidth() + animateDistance, duration);
         dragX = animateDistance - delta;
     }
     else
@@ -339,11 +326,11 @@ void SwipeContainer::animateLeft()
 
 void SwipeContainer::animateRight()
 {
-    const uint8_t duration = 10;
+    uint8_t duration = 10;
 
     if (animationCounter <= duration)
     {
-        const int16_t delta = EasingEquations::cubicEaseOut(animationCounter, 0, getWidth() - animateDistance, duration);
+        int16_t delta = EasingEquations::cubicEaseOut(animationCounter, 0, getWidth() - animateDistance, duration);
         dragX = animateDistance + delta;
     }
     else
@@ -376,16 +363,18 @@ void SwipeContainer::PageIndicator::setNumberOfPages(uint8_t size)
 {
     numberOfPages = size;
 
+    assert(numberOfPages > 0 && "At least one dot is needed");
+
     if (unselectedPages.getBitmapId() != BITMAP_INVALID)
     {
-        const int dotWidth = Bitmap(unselectedPages.getBitmap()).getWidth();
+        int dotWidth = Bitmap(unselectedPages.getBitmap()).getWidth();
         unselectedPages.setWidth(dotWidth * size);
 
         // adjust size of container according to the actual bitmaps
-        invalidate();
         setWidthHeight(unselectedPages);
         setCurrentPage(MIN(size, currentPage));
-        invalidate();
+
+        invalidateContent();
     }
 }
 
@@ -414,7 +403,7 @@ void SwipeContainer::PageIndicator::setCurrentPage(uint8_t page)
     if (page < numberOfPages && page != currentPage)
     {
         currentPage = page;
-        const int dotWidth = Bitmap(unselectedPages.getBitmap()).getWidth();
+        int dotWidth = Bitmap(unselectedPages.getBitmap()).getWidth();
         selectedPage.moveTo(page * dotWidth, selectedPage.getY());
     }
 }
@@ -428,100 +417,4 @@ uint8_t SwipeContainer::PageIndicator::getCurrentPage() const
 {
     return currentPage;
 }
-
-void SwipeContainer::goNextPage(uint8_t duration)
-{
-    animationDuration = duration;
-    if (getSelectedPage() < getNumberOfPages() - 1)
-    {
-        currentState = ANIMATE_LEFT_WITH_BUTTON;
-    }
-}
-
-void SwipeContainer::goPreviousPage(uint8_t duration)
-{
-    animationDuration = duration;
-    if (getSelectedPage() > 0)
-    {
-        currentState = ANIMATE_RIGHT_WITH_BUTTON;
-    }
-}
-
-uint8_t SwipeContainer::getAnimationDuration() const
-{
-    return animationDuration;
-}
-
-void SwipeContainer::setAnimationDuration(uint8_t newDuration)
-{
-    animationDuration = newDuration > 0 ? newDuration : 0;
-}
-
-void SwipeContainer::animateLeftWithButton()
-{
-    if (animationCounter <= animationDuration)
-    {
-        const int16_t delta = EasingEquations::cubicEaseOut(animationCounter, 0, getWidth() + animateDistance, animationDuration);
-        dragX = animateDistance - delta;
-    }
-    else
-    {
-        // Final step: stop the animation
-        currentState = NO_ANIMATION;
-        animationCounter = 0;
-        dragX = 0;
-        pageIndicator.goRight();
-    }
-    adjustPages();
-    animationCounter++;
-}
-
-void SwipeContainer::animateRightWithButton()
-{
-    if (animationCounter <= animationDuration)
-    {
-        const int16_t delta = EasingEquations::cubicEaseOut(animationCounter, 0, getWidth() - animateDistance, animationDuration);
-        dragX = animateDistance + delta;
-    }
-    else
-    {
-        // Final step: stop the animation
-        currentState = NO_ANIMATION;
-        animationCounter = 0;
-        dragX = 0;
-        pageIndicator.goLeft();
-    }
-    adjustPages();
-    animationCounter++;
-}
-
-void SwipeContainer::animateToPage()
-{
-    if (animationCounter <= animationDuration)
-    {
-        const int16_t delta = EasingEquations::cubicEaseOut(animationCounter, 0, getWidth() * pageDelta + animateDistance, animationDuration);
-        dragX = animateDistance - delta;
-    }
-    else
-    {
-        // Final step: stop the animation
-        currentState = NO_ANIMATION;
-        animationCounter = 0;
-        dragX = 0;
-        pageIndicator.setCurrentPage(getSelectedPage() + pageDelta);
-    }
-    adjustPages();
-    animationCounter++;
-}
-
-void SwipeContainer::goToPage(uint8_t page, uint8_t duration)
-{
-    animationDuration = duration;
-    if (page < getNumberOfPages() && page != getSelectedPage())
-    {
-        pageDelta = page - getSelectedPage();
-        currentState = ANIMATE_TO_PAGE;
-    }
-}
-
 } // namespace touchgfx

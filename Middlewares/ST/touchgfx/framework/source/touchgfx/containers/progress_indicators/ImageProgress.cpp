@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -60,47 +60,47 @@ void ImageProgress::setValue(int value)
 {
     AbstractDirectionProgress::setValue(value);
     const uint16_t maxProgress = (progressDirection == RIGHT || progressDirection == LEFT) ? progressIndicatorContainer.getWidth() : progressIndicatorContainer.getHeight();
-    const int16_t progress = AbstractDirectionProgress::getProgress(maxProgress);
+    int16_t progress = AbstractDirectionProgress::getProgress(maxProgress);
     if (fixedPosition)
     {
         switch (progressDirection)
         {
         case RIGHT:
             {
-                const int16_t oldWidth = container.getWidth();
+                int16_t oldWidth = container.getWidth();
                 container.setPosition(0, 0, progress, progressIndicatorContainer.getHeight());
                 image.setPosition(0, 0, progress, progressIndicatorContainer.getHeight());
-                const int16_t newWidth = container.getWidth();
+                int16_t newWidth = container.getWidth();
                 Rect r(MIN(oldWidth, newWidth), 0, abs(oldWidth - newWidth), container.getHeight());
                 progressIndicatorContainer.invalidateRect(r);
                 break;
             }
         case LEFT:
             {
-                const int16_t oldX = container.getX();
+                int16_t oldX = container.getX();
                 container.setPosition(getWidth() - progress, 0, progress, progressIndicatorContainer.getHeight());
                 image.setPosition(-container.getX(), 0, progressIndicatorContainer.getWidth(), progressIndicatorContainer.getHeight());
-                const int16_t newX = container.getX();
+                int16_t newX = container.getX();
                 Rect r(MIN(oldX, newX), 0, abs(oldX - newX), container.getHeight());
                 progressIndicatorContainer.invalidateRect(r);
                 break;
             }
         case DOWN:
             {
-                const int16_t oldHeight = container.getHeight();
+                int16_t oldHeight = container.getHeight();
                 container.setPosition(0, 0, progressIndicatorContainer.getWidth(), progress);
                 image.setPosition(0, 0, progressIndicatorContainer.getWidth(), progress);
-                const int16_t newHeight = container.getHeight();
+                int16_t newHeight = container.getHeight();
                 Rect r(0, MIN(oldHeight, newHeight), container.getWidth(), abs(oldHeight - newHeight));
                 progressIndicatorContainer.invalidateRect(r);
                 break;
             }
         case UP:
             {
-                const int16_t oldY = container.getY();
+                int16_t oldY = container.getY();
                 container.setPosition(0, progressIndicatorContainer.getHeight() - progress, progressIndicatorContainer.getWidth(), progress);
                 image.setPosition(0, -container.getY(), progressIndicatorContainer.getWidth(), progressIndicatorContainer.getHeight());
-                const int16_t newY = container.getY();
+                int16_t newY = container.getY();
                 Rect r(0, MIN(oldY, newY), container.getWidth(), abs(oldY - newY));
                 progressIndicatorContainer.invalidateRect(r);
                 break;

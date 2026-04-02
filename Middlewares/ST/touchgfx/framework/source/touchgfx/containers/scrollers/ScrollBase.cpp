@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -42,9 +42,7 @@ ScrollBase::ScrollBase()
       yClick(0),
       initialSwipeOffset(0),
       draggableX(false),
-      draggableY(false),
-      isPressed(false),
-      isScrolling(false)
+      draggableY(false)
 {
     Container::add(list);
     list.setXY(0, 0);
@@ -177,7 +175,7 @@ void ScrollBase::allowVerticalDrag(bool enable)
 
 void ScrollBase::animateToItem(int16_t itemIndex, int16_t animationSteps /*= -1*/)
 {
-    const int32_t position = getPositionForItem(itemIndex);
+    int32_t position = getPositionForItem(itemIndex);
     animateToPosition(position, animationSteps);
 }
 
@@ -213,7 +211,6 @@ void ScrollBase::stopAnimation()
 
 void ScrollBase::handleDragEvent(const DragEvent& event)
 {
-    isScrolling = true;
     stopAnimation();
     currentAnimationState = ANIMATING_DRAG;
     int32_t newOffset = getOffset() + (getHorizontal() ? event.getDeltaX() : event.getDeltaY()) * dragAcceleration / 10;
@@ -225,14 +222,13 @@ void ScrollBase::handleGestureEvent(const GestureEvent& event)
 {
     if (event.getType() == (getHorizontal() ? GestureEvent::SWIPE_HORIZONTAL : GestureEvent::SWIPE_VERTICAL))
     {
-        isScrolling = true;
-        const int16_t velocity = abs(event.getVelocity());
-        const int16_t direction = event.getVelocity() < 0 ? -1 : 1;
+        int16_t velocity = abs(event.getVelocity());
+        int16_t direction = event.getVelocity() < 0 ? -1 : 1;
         int16_t steps = MAX(1, velocity - 4) * 7;
         int32_t newOffset = getOffset() + direction * steps * swipeAcceleration / 10;
         if (maxSwipeItems > 0)
         {
-            const int32_t maxDistance = maxSwipeItems * itemSize;
+            int32_t maxDistance = maxSwipeItems * itemSize;
             newOffset = MIN(newOffset, initialSwipeOffset + maxDistance);
             newOffset = MAX(newOffset, initialSwipeOffset - maxDistance);
         }
@@ -247,7 +243,7 @@ void ScrollBase::handleTickEvent()
     if (currentAnimationState == ANIMATING_GESTURE)
     {
         gestureStep++;
-        const int newPosition = gestureStart + easingEquation(gestureStep, 0, gestureEnd - gestureStart, gestureStepsTotal);
+        int newPosition = gestureStart + easingEquation(gestureStep, 0, gestureEnd - gestureStart, gestureStepsTotal);
         setOffset(newPosition);
         if (gestureStep > gestureStepsTotal)
         {
@@ -284,12 +280,12 @@ int32_t ScrollBase::getOffset() const
 
 int ScrollBase::getNormalizedOffset(int offset) const
 {
-    const int16_t numItems = getNumberOfItems();
+    int16_t numItems = getNumberOfItems();
     if (numItems == 0 || itemSize == 0)
     {
         return offset;
     }
-    const int32_t listSize = numItems * itemSize;
+    int32_t listSize = numItems * itemSize;
     offset %= listSize;
     return offset > 0 ? offset - listSize : offset;
 }
@@ -314,7 +310,7 @@ int32_t ScrollBase::getNearestAlignedOffset(int32_t offset) const
 
 void ScrollBase::animateToPosition(int32_t position, int16_t steps)
 {
-    const int32_t currentPosition = getOffset();
+    int32_t currentPosition = getOffset();
     position = getNearestAlignedOffset(position);
     if (steps < 0)
     {
@@ -339,15 +335,5 @@ void ScrollBase::animateToPosition(int32_t position, int16_t steps)
             currentAnimationState = ANIMATING_GESTURE;
         }
     }
-}
-
-bool ScrollBase::getIsScrolling() const
-{
-    return isScrolling;
-}
-
-bool ScrollBase::getIsPressed() const
-{
-    return isPressed;
 }
 } // namespace touchgfx

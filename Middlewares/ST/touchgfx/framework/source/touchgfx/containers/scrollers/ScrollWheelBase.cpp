@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -26,7 +26,7 @@ ScrollWheelBase::ScrollWheelBase()
 
 void ScrollWheelBase::setSelectedItemOffset(int16_t offset)
 {
-    const int32_t currentOffset = getOffset();
+    int32_t currentOffset = getOffset();
     distanceBeforeAlignedItem = offset;
     setOffset(currentOffset);
 }
@@ -42,8 +42,8 @@ int32_t ScrollWheelBase::getPositionForItem(int16_t itemIndex)
     if (getCircular())
     {
         // Check if it is closer to scroll backwards
-        const int32_t otherOffset = newOffset + getNumberOfItems() * itemSize;
-        const int32_t offset = getOffset();
+        int32_t otherOffset = newOffset + getNumberOfItems() * itemSize;
+        int32_t offset = getOffset();
         if (abs(otherOffset - offset) < abs(newOffset - offset))
         {
             newOffset = otherOffset;
@@ -61,7 +61,7 @@ void ScrollWheelBase::animateToPosition(int32_t position, int16_t steps)
     if (animateToCallback && animateToCallback->isValid() && itemSize > 0)
     {
         position = getNearestAlignedOffset(position);
-        const int16_t itemIndex = (-position) / itemSize;
+        int16_t itemIndex = (-position) / itemSize;
         animateToCallback->execute(itemIndex);
     }
     ScrollBase::animateToPosition(position, steps);
@@ -86,7 +86,7 @@ int32_t ScrollWheelBase::keepOffsetInsideLimits(int32_t newOffset, int16_t overS
     if (!getCircular())
     {
         newOffset = MIN(newOffset, overShoot);
-        const int16_t numberOfItems = getNumberOfItems();
+        int16_t numberOfItems = getNumberOfItems();
         newOffset = MAX(newOffset, -(itemSize * (numberOfItems - 1)) - overShoot);
     }
     return newOffset;
@@ -98,10 +98,9 @@ void ScrollWheelBase::handleClickEvent(const ClickEvent& event)
     {
         return;
     }
-    const int32_t offset = getOffset();
+    int32_t offset = getOffset();
     if (event.getType() == ClickEvent::PRESSED)
     {
-        isPressed = true;
         xClick = event.getX();
         yClick = event.getY();
         initialSwipeOffset = offset;
@@ -115,7 +114,7 @@ void ScrollWheelBase::handleClickEvent(const ClickEvent& event)
     {
         if (currentAnimationState == NO_ANIMATION)
         {
-            const int16_t click = getHorizontal() ? xClick : yClick;
+            int16_t click = getHorizontal() ? xClick : yClick;
             // Click => move to clicked position
             if (click < distanceBeforeAlignedItem)
             {
@@ -140,17 +139,19 @@ void ScrollWheelBase::handleClickEvent(const ClickEvent& event)
         {
             itemSelectedCallback->execute(getSelectedItem());
         }
-        isPressed = false;
     }
-    isScrolling = false;
 }
 
 void ScrollWheelBase::handleDragEvent(const DragEvent& event)
 {
-    isScrolling = true;
     currentAnimationState = ANIMATING_DRAG;
     int newOffset = getOffset() + (getHorizontal() ? event.getDeltaX() : event.getDeltaY()) * dragAcceleration / 10;
-    newOffset = keepOffsetInsideLimits(newOffset, overshootPercentage);
+    if (!getCircular())
+    {
+        newOffset = MIN(newOffset, itemSize * 3 / 4);
+        int16_t numberOfItems = getNumberOfItems();
+        newOffset = MAX(newOffset, -(itemSize * (numberOfItems - 1)) - itemSize * 3 / 4);
+    }
     setOffset(newOffset);
 }
 
@@ -158,11 +159,10 @@ void ScrollWheelBase::handleGestureEvent(const GestureEvent& event)
 {
     if (event.getType() == (getHorizontal() ? GestureEvent::SWIPE_HORIZONTAL : GestureEvent::SWIPE_VERTICAL))
     {
-        isScrolling = true;
         int32_t newOffset = getOffset() + event.getVelocity() * swipeAcceleration / 10;
         if (maxSwipeItems > 0)
         {
-            const int32_t maxDistance = maxSwipeItems * itemSize;
+            int32_t maxDistance = maxSwipeItems * itemSize;
             newOffset = MIN(newOffset, initialSwipeOffset + maxDistance);
             newOffset = MAX(newOffset, initialSwipeOffset - maxDistance);
         }

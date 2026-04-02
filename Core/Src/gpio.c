@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2026 STMicroelectronics.
+  * Copyright (c) 2023 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -33,6 +33,8 @@
 /* USER CODE END 1 */
 
 /** Configure pins
+     PC15-OSC32_OUT (OSC32_OUT)   ------> RCC_OSC32_OUT
+     PC14-OSC32_IN (OSC32_IN)   ------> RCC_OSC32_IN
      PH1-OSC_OUT (PH1)   ------> RCC_OSC_OUT
      PH0-OSC_IN (PH0)   ------> RCC_OSC_IN
 */
@@ -60,28 +62,25 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LCD_BL_PWM_GPIO_Port, LCD_BL_PWM_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : LCD_DISP_Pin */
+  /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = LCD_DISP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LCD_DISP_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SD_CD_Pin */
+  /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = SD_CD_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(SD_CD_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LCD_BL_PWM_Pin */
+  /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = LCD_BL_PWM_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LCD_BL_PWM_GPIO_Port, &GPIO_InitStruct);
-
-  /*AnalogSwitch Config */
-  HAL_SYSCFG_AnalogSwitchConfig(SYSCFG_SWITCH_PA0, SYSCFG_SWITCH_PA0_CLOSE);
 
 }
 

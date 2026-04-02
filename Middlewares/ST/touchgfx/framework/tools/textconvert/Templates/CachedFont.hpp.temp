@@ -15,10 +15,8 @@ public:
     CachedFont(const struct touchgfx::BinaryFontData* data, FontId id, FontCache* _cache, const GeneratedFont* _flashFont)
         : GeneratedFont(0, // GlyphNode*
                         data->numberOfGlyphs,
-                        data->fontHeight,
-                        data->baseline,
-                        data->pixAboveTop,
-                        data->pixBelowBottom,
+                        data->height,
+                        data->pixBelowBase,
                         data->bitsPerPixel,
                         data->byteAlignRow,
                         data->maxLeft,
@@ -49,7 +47,6 @@ public:
     virtual int8_t getKerning(Unicode::UnicodeChar prevChar, const GlyphNode* glyph) const;
 
     void setFontCache(FontCache& cache);
-
     FontId getFontId() const
     {
         return fontId;

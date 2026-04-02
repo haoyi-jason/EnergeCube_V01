@@ -3,118 +3,39 @@
 /*********************************************************************************/
 #include <gui_generated/screen1_screen/Screen1ViewBase.hpp>
 #include <touchgfx/Color.hpp>
-#include <texts/TextKeysAndLanguages.hpp>
-#include <images/BitmapDatabase.hpp>
+#include <BitmapDatabase.hpp>
 
-Screen1ViewBase::Screen1ViewBase()
+Screen1ViewBase::Screen1ViewBase() :
+    buttonCallback(this, &Screen1ViewBase::buttonCallbackHandler)
 {
+
     __background.setPosition(0, 0, 480, 272);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+
+    toggleButton1.setXY(176, 117);
+    toggleButton1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_TOGGLEBARS_TOGGLE_ROUND_LARGE_BUTTON_OFF_ID), touchgfx::Bitmap(BITMAP_BLUE_TOGGLEBARS_TOGGLE_ROUND_LARGE_BUTTON_ON_ID));
+
+    button1.setXY(149, 179);
+    button1.setBitmaps(touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_ID), touchgfx::Bitmap(BITMAP_BLUE_BUTTONS_ROUND_EDGE_SMALL_PRESSED_ID));
+    button1.setAction(buttonCallback);
+
     add(__background);
-
-    textB3.setXY(6, 84);
-    textB3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textB3.setLinespacing(0);
-    textB3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_BI87));
-    add(textB3);
-
-    textB2.setXY(0, 50);
-    textB2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textB2.setLinespacing(0);
-    textB2.setTypedText(touchgfx::TypedText(T_TEXTB2));
-    add(textB2);
-
-    textA2.setXY(0, 20);
-    textA2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textA2.setLinespacing(0);
-    textA2.setTypedText(touchgfx::TypedText(T_TEXTB2));
-    add(textA2);
-
-    textA3.setXY(0, 0);
-    textA3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textA3.setLinespacing(0);
-    textA3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_TJ6J));
-    add(textA3);
-
-    textC2.setXY(0, 0);
-    textC2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textC2.setLinespacing(0);
-    textC2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_LE6V));
-    add(textC2);
-
-    textC3.setXY(0, 0);
-    textC3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textC3.setLinespacing(0);
-    textC3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_DMZ4));
-    add(textC3);
-
-    textE2.setXY(0, 0);
-    textE2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textE2.setLinespacing(0);
-    textE2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_JB6G));
-    add(textE2);
-
-    textE3.setXY(0, 0);
-    textE3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textE3.setLinespacing(0);
-    textE3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_G885));
-    add(textE3);
-
-    textF2.setXY(0, 0);
-    textF2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textF2.setLinespacing(0);
-    textF2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_PRQJ));
-    add(textF2);
-
-    textF3.setXY(0, 0);
-    textF3.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textF3.setLinespacing(0);
-    textF3.setTypedText(touchgfx::TypedText(T___SINGLEUSE_10O6));
-    add(textF3);
-
-    textD_vc.setXY(0, 0);
-    textD_vc.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textD_vc.setLinespacing(0);
-    textD_vc.setTypedText(touchgfx::TypedText(T___SINGLEUSE_IR5Z));
-    add(textD_vc);
-
-    textD_soc.setXY(0, 0);
-    textD_soc.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textD_soc.setLinespacing(0);
-    textD_soc.setTypedText(touchgfx::TypedText(T___SINGLEUSE_ZP2I));
-    add(textD_soc);
-
-    textD_alarm.setXY(0, 0);
-    textD_alarm.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-    textD_alarm.setLinespacing(0);
-    textD_alarm.setTypedText(touchgfx::TypedText(T___SINGLEUSE_JB2V));
-    add(textD_alarm);
-
-    socBarFill.setXY(138, 112);
-    socBarFill.setProgressIndicatorPosition(0, 0, 300, 10);
-    socBarFill.setRange(0, 100);
-    socBarFill.setDirection(touchgfx::AbstractDirectionProgress::RIGHT);
-    socBarFill.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BOXPROGRESS_NORMAL_MEDIUM_ID));
-    socBarFill.setColor(touchgfx::Color::getColorFromRGB(0, 240, 255));
-    socBarFill.setValue(60);
-    add(socBarFill);
-
-    socBarBg.setXY(0, 0);
-    socBarBg.setProgressIndicatorPosition(0, 0, 300, 10);
-    socBarBg.setRange(0, 100);
-    socBarBg.setDirection(touchgfx::AbstractDirectionProgress::RIGHT);
-    socBarBg.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BOXPROGRESS_NORMAL_MEDIUM_ID));
-    socBarBg.setColor(touchgfx::Color::getColorFromRGB(0, 240, 255));
-    socBarBg.setValue(60);
-    add(socBarBg);
-}
-
-Screen1ViewBase::~Screen1ViewBase()
-{
-
+    add(toggleButton1);
+    add(button1);
 }
 
 void Screen1ViewBase::setupScreen()
 {
 
+}
+
+void Screen1ViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
+{
+    if (&src == &button1)
+    {
+        //Interaction1
+        //When button1 clicked change screen to Screen2
+        //Go to Screen2 with screen transition towards East
+        application().gotoScreen2ScreenCoverTransitionEast();
+    }
 }

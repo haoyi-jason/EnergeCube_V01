@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -192,20 +192,16 @@ void GraphLabelsX::invalidateGraphPointAt(int16_t index)
         const int labelScaled = (minorInterval == 0) ? 0 : (scaledIndex / minorInterval) * labelInterval;
         formatLabel(wildcard, 20, getIndexToXAxis(graph, scaledIndex, labelScaled), labelDecimals, labelDecimalPoint, dataScale);
         // Adjust to make label centered
-        int16_t labelWidth;
-        const Unicode::UnicodeChar* text = labelTypedText.getText();
+        uint16_t labelWidth;
         if (labelRotation == TEXT_ROTATE_0 || labelRotation == TEXT_ROTATE_180)
         {
-            labelWidth = fontToDraw->getStringWidth(text, wildcard);
+            labelWidth = fontToDraw->getStringWidth(labelTypedText.getText(), wildcard);
         }
         else
         {
-            // Get full height for all lines, except the last line for which we "replace" the part under
-            // the baseline with the 'spacing above'.
-            labelWidth = fontToDraw->getHeight() * fontToDraw->getNumberOfLines(text, wildcard) + fontToDraw->getSpacingAbove(text, wildcard);
+            labelWidth = fontToDraw->getMaxTextHeight(labelTypedText.getText(), wildcard) * fontToDraw->getNumberOfLines(labelTypedText.getText(), wildcard) + fontToDraw->getSpacingAbove(labelTypedText.getText(), wildcard);
         }
-        const int16_t offset = (labelRotation == TEXT_ROTATE_0 || labelRotation == TEXT_ROTATE_90) ? (labelWidth / 2) : ((labelWidth + 1) / 2);
-        Rect dirty((graph->getGraphAreaMarginLeft() + valueToScreenXQ5(graph, scaledIndex).round()) - offset, 0, labelWidth, getHeight());
+        Rect dirty((graph->getGraphAreaMarginLeft() + valueToScreenXQ5(graph, scaledIndex).round()) - labelWidth / 2, 0, labelWidth, getHeight());
         invalidateRect(dirty);
     }
 }
@@ -235,18 +231,16 @@ void GraphLabelsX::drawString(const Rect& invalidatedArea, const Font* fontToDra
     Unicode::UnicodeChar wildcard[20];
     formatLabel(wildcard, 20, getIndexToXAxis(graph, valueScaled, labelScaled), labelDecimals, labelDecimalPoint, graph->getScaleX());
     // Adjust to make label centered
-    int16_t labelWidth;
-    const Unicode::UnicodeChar* text = labelTypedText.getText();
+    uint16_t labelWidth;
     if (labelRotation == TEXT_ROTATE_0 || labelRotation == TEXT_ROTATE_180)
     {
-        labelWidth = fontToDraw->getStringWidth(text, wildcard);
+        labelWidth = fontToDraw->getStringWidth(labelTypedText.getText(), wildcard);
     }
     else
     {
-        labelWidth = fontToDraw->getHeight() * fontToDraw->getNumberOfLines(text, wildcard) + fontToDraw->getSpacingAbove(text, wildcard);
+        labelWidth = fontToDraw->getMaxTextHeight(labelTypedText.getText(), wildcard) * fontToDraw->getNumberOfLines(labelTypedText.getText(), wildcard) + fontToDraw->getSpacingAbove(labelTypedText.getText(), wildcard);
     }
-    const int16_t offset = (labelRotation == TEXT_ROTATE_0 || labelRotation == TEXT_ROTATE_90) ? (labelWidth / 2) : ((labelWidth + 1) / 2);
-    Rect labelRect((graph->getGraphAreaMarginLeft() + valueToScreenXQ5(graph, valueScaled).round()) - offset, 0, labelWidth, getHeight());
+    Rect labelRect((graph->getGraphAreaMarginLeft() + valueToScreenXQ5(graph, valueScaled).round()) - labelWidth / 2, 0, labelWidth, getHeight());
 
     Rect dirty = labelRect & invalidatedArea;
     if (!dirty.isEmpty())
@@ -254,8 +248,8 @@ void GraphLabelsX::drawString(const Rect& invalidatedArea, const Font* fontToDra
         dirty.x -= labelRect.x;
         dirty.y -= labelRect.y;
         translateRectToAbsolute(labelRect);
-        const LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
-        HAL::lcd().drawString(labelRect, dirty, visuals, text, wildcard, 0);
+        LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
+        HAL::lcd().drawString(labelRect, dirty, visuals, labelTypedText.getText(), wildcard, 0);
     }
 }
 
@@ -271,20 +265,16 @@ void GraphLabelsY::drawString(const Rect& invalidatedArea, const Font* fontToDra
     formatLabel(wildcard, 20, labelScaled, labelDecimals, labelDecimalPoint, dataScale);
 
     // Adjust to make label centered
-    int16_t labelHeight;
-    const Unicode::UnicodeChar* text = labelTypedText.getText();
+    uint16_t labelHeight;
     if (labelRotation == TEXT_ROTATE_0 || labelRotation == TEXT_ROTATE_180)
     {
-        // Get full height for all lines, except the last line for which we "replace" the part under
-        // the baseline with the 'spacing above'.
-        labelHeight = fontToDraw->getHeight() * fontToDraw->getNumberOfLines(text, wildcard) + fontToDraw->getSpacingAbove(text, wildcard);
+        labelHeight = fontToDraw->getMaxTextHeight(labelTypedText.getText(), wildcard) * fontToDraw->getNumberOfLines(labelTypedText.getText(), wildcard) + fontToDraw->getSpacingAbove(labelTypedText.getText(), wildcard);
     }
     else
     {
-        labelHeight = fontToDraw->getStringWidth(text, wildcard);
+        labelHeight = fontToDraw->getStringWidth(labelTypedText.getText(), wildcard);
     }
-    const int16_t offset = (labelRotation == TEXT_ROTATE_0 || labelRotation == TEXT_ROTATE_90) ? (labelHeight / 2) : ((labelHeight + 1) / 2);
-    Rect labelRect(0, (graph->getGraphAreaMarginTop() + valueToScreenYQ5(graph, valueScaled).round()) - offset, getWidth(), labelHeight);
+    Rect labelRect(0, (graph->getGraphAreaMarginTop() + valueToScreenYQ5(graph, valueScaled).round()) - labelHeight / 2, getWidth(), labelHeight);
 
     Rect dirty = labelRect & invalidatedArea;
     if (!dirty.isEmpty())
@@ -292,8 +282,8 @@ void GraphLabelsY::drawString(const Rect& invalidatedArea, const Font* fontToDra
         dirty.x -= labelRect.x;
         dirty.y -= labelRect.y;
         translateRectToAbsolute(labelRect);
-        const LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
-        HAL::lcd().drawString(labelRect, dirty, visuals, text, wildcard, 0);
+        LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
+        HAL::lcd().drawString(labelRect, dirty, visuals, labelTypedText.getText(), wildcard, 0);
     }
 }
 
@@ -315,7 +305,7 @@ void GraphTitle::draw(const Rect& invalidatedArea) const
         return;
     }
 
-    const uint16_t lineHeight = fontToDraw->getHeight() * fontToDraw->getNumberOfLines(titleTypedText.getText());
+    const uint16_t lineHeight = fontToDraw->getMaxTextHeight(titleTypedText.getText()) * fontToDraw->getNumberOfLines(titleTypedText.getText()) + fontToDraw->getSpacingAbove(titleTypedText.getText());
 
     Rect labelRect(rect);
     // Adjust to make label centered
@@ -336,7 +326,7 @@ void GraphTitle::draw(const Rect& invalidatedArea) const
         dirty.x -= labelRect.x;
         dirty.y -= labelRect.y;
         translateRectToAbsolute(labelRect);
-        const LCD::StringVisuals visuals(fontToDraw, getColor(), a, titleTypedText.getAlignment(), 0, titleRotation, titleTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
+        LCD::StringVisuals visuals(fontToDraw, getColor(), a, titleTypedText.getAlignment(), 0, titleRotation, titleTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
         HAL::lcd().drawString(labelRect, dirty, visuals, titleTypedText.getText(), 0, 0);
     }
 }

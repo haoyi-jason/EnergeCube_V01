@@ -22,13 +22,12 @@ public:
     /**
      * Construct the UnmappedDataFont.
      *
-     * @param glyphs                 The array of glyphs known to this font (indirect).
+     * @param list                   The array of glyphs known to this font (indirect).
      * @param unicodes               The array of unicodes known to this font (direct).
-     * @param numGlyphs              The number of glyphs in list.
+     * @param size                   The number of glyphs in list.
      * @param height                 The height in pixels of the highest character in this font.
-     * @param baseline               The height of the baseline in pixels.
-     * @param pixBelowBottom         The maximum number of pixels that can be drawn below the
-     *                               bottom in this font.
+     * @param pixBelowBase           The maximum number of pixels that can be drawn below the
+     *                               baseline in this font.
      * @param bitsPerPixel           The number of bits per pixel in this font.
      * @param byteAlignRow           Are glyphs encoded using A4 format
      * @param maxLeft                The maximum a character extends to the left.
@@ -40,7 +39,7 @@ public:
      * @param ellipsisChar           The ellipsis character used for truncating long texts.
      * @param gsubTable              Pointer to GSUB table (direct).
      */
-    UnmappedDataFont(const GlyphNode* glyphs, const uint16_t* unicodes, uint16_t numGlyphs, uint16_t height, uint16_t baseline, uint8_t pixAboveTop, uint8_t pixBelowBottom, uint8_t bitsPerPixel, uint8_t byteAlignRow, uint8_t maxLeft, uint8_t maxRight, const uint8_t* const* glyphDataList, const KerningNode* kerningList, const Unicode::UnicodeChar fallbackChar, const Unicode::UnicodeChar ellipsisChar, const uint16_t* const gsubData, const FontContextualFormsTable* formsTable);
+    UnmappedDataFont(const GlyphNode* list, const uint16_t* unicodes, uint16_t size, uint16_t height, uint8_t pixBelowBase, uint8_t bitsPerPixel, uint8_t byteAlignRow, uint8_t maxLeft, uint8_t maxRight, const uint8_t* const* glyphDataList, const KerningNode* kerningList, const Unicode::UnicodeChar fallbackChar, const Unicode::UnicodeChar ellipsisChar, const uint16_t* const gsubData, const FontContextualFormsTable* formsTable);
 
     using Font::getGlyph;
 
@@ -104,10 +103,9 @@ public:
 
 protected:
     UnmappedDataFont()
-        : Font(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), glyphList(0), unicodes(0), glyphDataList(0), kerningData(0), gsubTable(0)
+        : Font(0, 0, 0, 0, 0, 0, 0, 0), glyphList(0), unicodes(0), glyphDataList(0), kerningData(0), gsubTable(0)
     {
     }
-
     int lookupUnicode(uint16_t unicode) const;
 
     const GlyphNode* glyphList;     ///< The list of glyphs
@@ -121,17 +119,6 @@ protected:
 
     static GlyphNode glyphNodeBuffer; ///< Buffer for GlyphNodes read from unmapped flash
 };
-
-class CompressedUnmappedDataFont : public UnmappedDataFont
-{
-public:
-    CompressedUnmappedDataFont(const GlyphNode* glyphs, const uint16_t* unicodes, uint16_t numGlyphs, uint16_t height, uint16_t baseline, uint8_t pixAboveTop, uint8_t pixBelowBottom, uint8_t bitsPerPixel, uint8_t byteAlignRow, uint8_t maxLeft, uint8_t maxRight, const uint8_t* const* glyphDataList, const KerningNode* kerningList, const Unicode::UnicodeChar fallbackChar, const Unicode::UnicodeChar ellipsisChar, const uint16_t* const gsubData, const FontContextualFormsTable* formsTable);
-
-    virtual const GlyphNode* getGlyph(Unicode::UnicodeChar unicode) const;
-    virtual const GlyphNode* getGlyph(Unicode::UnicodeChar unicode, const uint8_t*& pixelData, uint8_t& bitsPerPixel) const;
-    virtual const uint8_t* getPixelData(const GlyphNode* glyph) const;
-};
-
 } // namespace touchgfx
 
 #endif // TOUCHGFX_UNMAPPEDDATAFONT_HPP

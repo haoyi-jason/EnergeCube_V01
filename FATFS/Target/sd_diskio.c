@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2026 STMicroelectronics.
+  * Copyright (c) 2023 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -271,7 +271,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   }
 
 #if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & 0x1F))
+  if (!((uint32_t)buff & 0x3))
   {
 #endif
     /* Fast path cause destination buffer is correctly aligned */
@@ -434,7 +434,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
   }
 
 #if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & 0x1F))
+  if (!((uint32_t)buff & 0x3))
   {
 #endif
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
@@ -488,7 +488,6 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 #endif
   }
 #if defined(ENABLE_SCRATCH_BUFFER)
-  }
   else {
     /* Slow path, fetch each sector a part and memcpy to destination buffer */
     int i;
@@ -558,6 +557,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
         res = RES_OK;
     }
 
+  }
 #endif
 
   return res;
@@ -641,7 +641,7 @@ void BSP_SD_WriteCpltCallback(void)
    osMessagePut(SDQueueID, WRITE_CPLT_MSG, 0);
 #else
    const uint16_t msg = WRITE_CPLT_MSG;
-   osMessageQueuePut(SDQueueID, (const void *)&msg, 0, 0);
+   osMessageQueuePut(SDQueueID, (const void *)&msg, NULL, 0);
 #endif
 }
 
@@ -660,7 +660,7 @@ void BSP_SD_ReadCpltCallback(void)
    osMessagePut(SDQueueID, READ_CPLT_MSG, 0);
 #else
    const uint16_t msg = READ_CPLT_MSG;
-   osMessageQueuePut(SDQueueID, (const void *)&msg, 0, 0);
+   osMessageQueuePut(SDQueueID, (const void *)&msg, NULL, 0);
 #endif
 }
 
@@ -672,7 +672,7 @@ void BSP_SD_AbortCallback(void)
    osMessagePut(SDQueueID, RW_ABORT_MSG, 0);
 #else
    const uint16_t msg = RW_ABORT_MSG;
-   osMessageQueuePut(SDQueueID, (const void *)&msg, 0, 0);
+   osMessageQueuePut(SDQueueID, (const void *)&msg, NULL, 0);
 #endif
 }
 */

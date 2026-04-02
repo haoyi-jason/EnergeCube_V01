@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -51,7 +51,7 @@ void TextArea::draw(const Rect& area) const
             const Font* fontToDraw = typedText.getFont();
             if (fontToDraw != 0)
             {
-                const LCD::StringVisuals visuals(fontToDraw, color, alpha, getAlignment(), linespace, rotation, typedText.getTextDirection(), indentation, wideTextAction);
+                LCD::StringVisuals visuals(fontToDraw, color, alpha, getAlignment(), linespace, rotation, typedText.getTextDirection(), indentation, wideTextAction);
                 HAL::lcd().drawString(getAbsoluteRect(), rectToDraw, visuals, typedText.getText(), getWildcard1(), getWildcard2());
             }
         }
@@ -74,8 +74,8 @@ void TextArea::resizeToCurrentText()
 {
     if (typedText.hasValidId())
     {
-        const uint16_t w = getTextWidth();
-        const uint16_t h = getTextHeight();
+        uint16_t w = getTextWidth();
+        uint16_t h = getTextHeight();
         if (rotation == TEXT_ROTATE_0 || rotation == TEXT_ROTATE_180)
         {
             setWidthHeight(w, h);
@@ -91,16 +91,16 @@ void TextArea::resizeToCurrentTextWithAlignment()
 {
     if (typedText.hasValidId())
     {
-        const Alignment alignment = getAlignment();
-        const uint16_t text_width = getTextWidth();
-        const uint16_t text_height = getTextHeight();
+        Alignment alignment = getAlignment();
+        uint16_t text_width = getTextWidth();
+        uint16_t text_height = getTextHeight();
         if (rotation == TEXT_ROTATE_0 || rotation == TEXT_ROTATE_180)
         {
             // (rotate-0 && left-align) or (rotate-180 && right-align) places text to the left
             if (!((rotation == TEXT_ROTATE_0 && alignment == LEFT) || (rotation == TEXT_ROTATE_180 && alignment == RIGHT)))
             {
-                const uint16_t old_width = getWidth();
-                const uint16_t old_x = getX();
+                uint16_t old_width = getWidth();
+                uint16_t old_x = getX();
                 if (alignment == CENTER)
                 {
                     setX(old_x + (old_width - text_width) / 2);
@@ -112,8 +112,8 @@ void TextArea::resizeToCurrentTextWithAlignment()
             }
             if (rotation == TEXT_ROTATE_180)
             {
-                const uint16_t old_height = getHeight();
-                const uint16_t old_y = getY();
+                uint16_t old_height = getHeight();
+                uint16_t old_y = getY();
                 setY(old_y + (old_height - text_height));
             }
             setWidthHeight(text_width, text_height);
@@ -123,8 +123,8 @@ void TextArea::resizeToCurrentTextWithAlignment()
             // 90+left or 270+right places text at the same y coordinate
             if (!((rotation == TEXT_ROTATE_90 && alignment == LEFT) || (rotation == TEXT_ROTATE_270 && alignment == RIGHT)))
             {
-                const uint16_t old_height = getHeight();
-                const uint16_t old_y = getY();
+                uint16_t old_height = getHeight();
+                uint16_t old_y = getY();
                 if (alignment == CENTER)
                 {
                     setY(old_y + (old_height - text_width) / 2);
@@ -136,8 +136,8 @@ void TextArea::resizeToCurrentTextWithAlignment()
             }
             if (rotation == TEXT_ROTATE_90)
             {
-                const uint16_t old_width = getWidth();
-                const uint16_t old_x = getX();
+                uint16_t old_width = getWidth();
+                uint16_t old_x = getX();
                 setX(old_x + (old_width - text_height));
             }
             setWidthHeight(text_height, text_width);
@@ -149,7 +149,7 @@ void TextArea::resizeHeightToCurrentText()
 {
     if (typedText.hasValidId())
     {
-        const uint16_t h = getTextHeight();
+        uint16_t h = getTextHeight();
         if (rotation == TEXT_ROTATE_0 || rotation == TEXT_ROTATE_180)
         {
             setHeight(h);
@@ -165,7 +165,7 @@ void TextArea::resizeHeightToCurrentTextWithRotation()
 {
     if (typedText.hasValidId())
     {
-        const uint16_t h = getTextHeight();
+        uint16_t h = getTextHeight();
         switch (rotation)
         {
         case TEXT_ROTATE_0:
@@ -197,15 +197,16 @@ int16_t TextArea::calculateTextHeight(const Unicode::UnicodeChar* format, ...) c
     va_start(pArg, format);
 
     const Font* fontToDraw = typedText.getFont();
-    const int16_t textHeight = fontToDraw->getHeight();
+    int16_t textHeight = fontToDraw->getMinimumTextHeight();
 
     TextProvider textProvider;
     textProvider.initialize(format, pArg, fontToDraw->getGSUBTable(), fontToDraw->getContextualFormsTable());
 
-    const int16_t numLines = LCD::getNumLines(textProvider, wideTextAction, typedText.getTextDirection(), typedText.getFont(), getWidth() - indentation);
+    int16_t numLines = LCD::getNumLines(textProvider, wideTextAction, typedText.getTextDirection(), typedText.getFont(), getWidth() - indentation);
 
     va_end(pArg);
-    return textHeight + linespace > 0 ? numLines * textHeight + (numLines - 1) * linespace : (numLines > 0 ? textHeight : 0);
+    return (textHeight + linespace > 0) ? (numLines * textHeight + (numLines - 1) * linespace) : (numLines > 0) ? (textHeight)
+                                                                                                                : 0;
 }
 
 void TextArea::invalidateContent() const
@@ -232,27 +233,25 @@ TextArea::BoundingArea TextArea::calculateBoundingArea() const
 
     const Font* fontToDraw = typedText.getFont();
     const Unicode::UnicodeChar* textToDraw = typedText.getText();
-    const int16_t fontHeight = fontToDraw->getHeight();
-    const int16_t lineHeight = fontHeight + linespace;
+    const int16_t lineHeight = fontToDraw->getMinimumTextHeight() + linespace;
     int16_t width = 0;
-    uint16_t numberOfLines = 0;
+    uint16_t numOfLines = 0;
 
     if (wideTextAction == WIDE_TEXT_NONE)
     {
         TextProvider textProvider;
         textProvider.initialize(textToDraw, fontToDraw->getGSUBTable(), fontToDraw->getContextualFormsTable(), getWildcard1(), getWildcard2());
 
-        int16_t widgetRectHeight = (rotation == TEXT_ROTATE_0 || rotation == TEXT_ROTATE_180) ? getHeight() : getWidth();
-
         // Iterate through each line, find the longest line width and sum up the total height of the bounding rectangle
         do
         {
             const uint16_t lineWidth = LCD::stringWidth(textProvider, *(fontToDraw), 0x7FFF, typedText.getTextDirection());
-            width = MAX(width, lineWidth);
-            numberOfLines++;
-            widgetRectHeight -= lineHeight;
-            // Keep reading until end of string or next line completely invisible.
-        } while (!textProvider.endOfString() && widgetRectHeight + fontToDraw->getPixelsAboveTop() > 0);
+            if (width < lineWidth)
+            {
+                width = lineWidth;
+            }
+            numOfLines++;
+        } while (!textProvider.endOfString());
     }
     else
     {
@@ -261,21 +260,31 @@ TextArea::BoundingArea TextArea::calculateBoundingArea() const
 
         const int16_t widgetRectWidth = (rotation == TEXT_ROTATE_0 || rotation == TEXT_ROTATE_180) ? getWidth() : getHeight();
         int16_t widgetRectHeight = (rotation == TEXT_ROTATE_0 || rotation == TEXT_ROTATE_180) ? getHeight() : getWidth();
-        LCD::WideTextInternalStruct wtis(wideTextProvider, widgetRectWidth - indentation, widgetRectHeight, typedText.getTextDirection(), fontToDraw, linespace, wideTextAction);
+        LCD::WideTextInternalStruct wtis(wideTextProvider, widgetRectWidth - indentation, typedText.getTextDirection(), fontToDraw, wideTextAction);
 
         // Iterate through each line, find the longest line width and sum up the total height of the bounding rectangle
         do
         {
-            wtis.scanStringLengthForLine();
+            wtis.getStringLengthForLine(lineHeight * 2 > widgetRectHeight);
+
             const uint16_t lineWidth = wtis.getLineWidth();
-            width = MAX(width, lineWidth);
-            numberOfLines++;
+            if (width < lineWidth)
+            {
+                width = lineWidth;
+            }
+            numOfLines++;
             widgetRectHeight -= lineHeight;
-            // Keep reading until end of string, ellipsis inserted or next line completely invisible.
-        } while (wtis.getCurrChar() != 0 && !wtis.ellipsisAtEndOfLine() && widgetRectHeight + fontToDraw->getPixelsAboveTop() > 0);
+        } while (wtis.getCurrChar() != 0 && widgetRectHeight > lineHeight);
     }
-    int16_t height = (numberOfLines * lineHeight) - linespace;
-    height = MAX(height, fontHeight) + fontToDraw->getPixelsBelowBottom();
+    int16_t height = (numOfLines * lineHeight) - linespace; // Linespace from the last line is not covering any text and can be omitted
+
+    // In Arabic the minimum text height of the font is not adjusted according
+    // to the diacritical marks below a letter. To accommodate this, we extend
+    // the bounding area with one extra line, to have enough space for these marks.
+    if (height > 0)
+    {
+        height += fontToDraw->getMinimumTextHeight();
+    }
 
     Rect boundingRect(0, 0, width, height);
 

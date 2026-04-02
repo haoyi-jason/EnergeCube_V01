@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2026) STMicroelectronics.
+* Copyright (c) 2018(-2022) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.26.1 distribution.
+* This file is part of the TouchGFX 4.20.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -214,10 +214,8 @@ bool GraphElementArea::drawCanvasWidget(const Rect& invalidatedArea) const
         }
     }
 
-    const Rect invalidRect = Rect(graph->getGraphAreaPaddingLeft(), graph->getGraphAreaPaddingTop(), graph->getGraphAreaWidth(), graph->getGraphAreaHeight()) & invalidatedArea;
-
-    Canvas canvas(getPainter(), getAbsoluteRect(), invalidRect, getAlpha());
-
+    Rect invalidRect = Rect(graph->getGraphAreaPaddingLeft(), graph->getGraphAreaPaddingTop(), graph->getGraphAreaWidth(), graph->getGraphAreaHeight()) & invalidatedArea;
+    Canvas canvas(this, invalidRect);
     canvas.moveTo(roundQ5(indexToScreenXQ5(graph, indexMin)), screenYbaseQ5);
     for (int16_t index = indexMin; index <= indexMax; index++)
     {
@@ -285,10 +283,8 @@ bool GraphElementLine::drawCanvasWidget(const Rect& invalidatedArea) const
         return true; // Nothing to draw, everything is fine!
     }
 
-    const Rect invalidRect = Rect(0, graph->getGraphAreaPaddingTop(), graph->getGraphAreaWidthIncludingPadding(), graph->getGraphAreaHeight()) & invalidatedArea;
-
-    Canvas canvas(getPainter(), getAbsoluteRect(), invalidRect, getAlpha());
-
+    Rect invalidRect = Rect(0, graph->getGraphAreaPaddingTop(), graph->getGraphAreaWidthIncludingPadding(), graph->getGraphAreaHeight()) & invalidatedArea;
+    Canvas canvas(this, invalidRect);
     const int16_t gapIndex = graph->getGapBeforeIndex();
     if (gapIndex <= 0 || gapIndex <= indexMin || gapIndex > indexMax)
     {
@@ -305,16 +301,16 @@ bool GraphElementLine::drawCanvasWidget(const Rect& invalidatedArea) const
 void GraphElementLine::invalidateGraphPointAt(int16_t index)
 {
     const AbstractDataGraph* graph = getGraph();
-    CWRUtil::Q5 const lineWidthQ5 = CWRUtil::toQ5(lineWidth);
+    CWRUtil::Q5 lineWidthQ5 = CWRUtil::toQ5(lineWidth);
     Rect dirty(rectAround(indexToScreenXQ5(graph, index), indexToScreenYQ5(graph, index), lineWidthQ5));
     if (index > 0)
     {
-        const Rect other(rectAround(indexToScreenXQ5(graph, index - 1), indexToScreenYQ5(graph, index - 1), lineWidthQ5));
+        Rect other(rectAround(indexToScreenXQ5(graph, index - 1), indexToScreenYQ5(graph, index - 1), lineWidthQ5));
         dirty.expandToFit(other);
     }
     if (index < graph->getUsedCapacity() - 1)
     {
-        const Rect other(rectAround(indexToScreenXQ5(graph, index + 1), indexToScreenYQ5(graph, index + 1), lineWidthQ5));
+        Rect other(rectAround(indexToScreenXQ5(graph, index + 1), indexToScreenYQ5(graph, index + 1), lineWidthQ5));
         dirty.expandToFit(other);
     }
     dirty &= Rect(0, graph->getGraphAreaPaddingTop(), graph->getGraphAreaWidthIncludingPadding(), graph->getGraphAreaHeight());
@@ -430,7 +426,7 @@ void GraphElementHistogram::draw(const Rect& invalidatedArea) const
         return; // Nothing to draw, everything is fine!
     }
 
-    const Rect invalidRect = Rect(0, graph->getGraphAreaPaddingTop(), graph->getGraphAreaWidthIncludingPadding(), graph->getGraphAreaHeight()) & invalidatedArea;
+    Rect invalidRect = Rect(0, graph->getGraphAreaPaddingTop(), graph->getGraphAreaWidthIncludingPadding(), graph->getGraphAreaHeight()) & invalidatedArea;
     for (int16_t index = indexMin; index <= indexMax; index++)
     {
         const int16_t screenX = (indexToScreenXQ5(graph, index) + barOffsetQ5 - barWidthHalfQ5).round();
@@ -521,8 +517,8 @@ bool GraphElementDots::drawCanvasWidget(const Rect& invalidatedArea) const
     const CWRUtil::Q5 dotWidthQ5 = CWRUtil::toQ5(dotWidth);
     const CWRUtil::Q5 dotWidth3Q5 = CWRUtil::muldivQ5(dotWidthQ5, CWRUtil::toQ5(3), CWRUtil::toQ5(10));
     const CWRUtil::Q5 dotWidth4Q5 = CWRUtil::muldivQ5(dotWidthQ5, CWRUtil::toQ5(4), CWRUtil::toQ5(10));
-    const CWRUtil::Q5 dotWidth7Q5 = CWRUtil::muldivQ5(dotWidthQ5, CWRUtil::toQ5(7), CWRUtil::toQ5(50));
-    const CWRUtil::Q5 dotWidth24Q5 = CWRUtil::muldivQ5(dotWidthQ5, CWRUtil::toQ5(24), CWRUtil::toQ5(50));
+    const CWRUtil::Q5 dotWidth5Q5 = CWRUtil::muldivQ5(dotWidthQ5, CWRUtil::toQ5(5), CWRUtil::toQ5(26));
+    const CWRUtil::Q5 dotWidth12Q5 = CWRUtil::muldivQ5(dotWidthQ5, CWRUtil::toQ5(12), CWRUtil::toQ5(26));
     const CWRUtil::Q5 dotWidth2Q5 = CWRUtil::muldivQ5(dotWidthQ5, CWRUtil::toQ5(1), CWRUtil::toQ5(2));
     const uint16_t dotWidthHalf = CWRUtil::Q5(((int)dotWidthQ5 + 1) / 2).ceil(); // Round up
     int16_t indexMin;
@@ -533,9 +529,7 @@ bool GraphElementDots::drawCanvasWidget(const Rect& invalidatedArea) const
     }
 
     const bool bigDots = (dotWidth > 6);
-
-    Canvas canvas(getPainter(), getAbsoluteRect(), invalidatedArea, getAlpha());
-
+    Canvas canvas(this, invalidatedArea);
     for (int16_t index = indexMin; index <= indexMax; index++)
     {
         if (isCenterInvisible(graph, index))
@@ -544,31 +538,31 @@ bool GraphElementDots::drawCanvasWidget(const Rect& invalidatedArea) const
         }
         const CWRUtil::Q5 screenXcenterQ5 = roundQ5(indexToScreenXQ5(graph, index));
         const CWRUtil::Q5 screenYcenterQ5 = roundQ5(indexToScreenYQ5(graph, index));
-        const Rect dirty(rectAround(screenXcenterQ5, screenYcenterQ5, dotWidthQ5) & invalidatedArea);
+        Rect dirty(rectAround(screenXcenterQ5, screenYcenterQ5, dotWidthQ5) & invalidatedArea);
         if (!dirty.isEmpty())
         {
             if (bigDots)
             {
                 canvas.moveTo(screenXcenterQ5 - dotWidth2Q5, screenYcenterQ5);
-                canvas.lineTo(screenXcenterQ5 - dotWidth24Q5, screenYcenterQ5 - dotWidth7Q5);
+                canvas.lineTo(screenXcenterQ5 - dotWidth12Q5, screenYcenterQ5 - dotWidth5Q5);
                 canvas.lineTo(screenXcenterQ5 - dotWidth4Q5, screenYcenterQ5 - dotWidth3Q5);
                 canvas.lineTo(screenXcenterQ5 - dotWidth3Q5, screenYcenterQ5 - dotWidth4Q5);
-                canvas.lineTo(screenXcenterQ5 - dotWidth7Q5, screenYcenterQ5 - dotWidth24Q5);
+                canvas.lineTo(screenXcenterQ5 - dotWidth5Q5, screenYcenterQ5 - dotWidth12Q5);
                 canvas.lineTo(screenXcenterQ5, screenYcenterQ5 - dotWidth2Q5);
-                canvas.lineTo(screenXcenterQ5 + dotWidth7Q5, screenYcenterQ5 - dotWidth24Q5);
+                canvas.lineTo(screenXcenterQ5 + dotWidth5Q5, screenYcenterQ5 - dotWidth12Q5);
                 canvas.lineTo(screenXcenterQ5 + dotWidth3Q5, screenYcenterQ5 - dotWidth4Q5);
                 canvas.lineTo(screenXcenterQ5 + dotWidth4Q5, screenYcenterQ5 - dotWidth3Q5);
-                canvas.lineTo(screenXcenterQ5 + dotWidth24Q5, screenYcenterQ5 - dotWidth7Q5);
+                canvas.lineTo(screenXcenterQ5 + dotWidth12Q5, screenYcenterQ5 - dotWidth5Q5);
                 canvas.lineTo(screenXcenterQ5 + dotWidth2Q5, screenYcenterQ5);
-                canvas.lineTo(screenXcenterQ5 + dotWidth24Q5, screenYcenterQ5 + dotWidth7Q5);
+                canvas.lineTo(screenXcenterQ5 + dotWidth12Q5, screenYcenterQ5 + dotWidth5Q5);
                 canvas.lineTo(screenXcenterQ5 + dotWidth4Q5, screenYcenterQ5 + dotWidth3Q5);
                 canvas.lineTo(screenXcenterQ5 + dotWidth3Q5, screenYcenterQ5 + dotWidth4Q5);
-                canvas.lineTo(screenXcenterQ5 + dotWidth7Q5, screenYcenterQ5 + dotWidth24Q5);
+                canvas.lineTo(screenXcenterQ5 + dotWidth5Q5, screenYcenterQ5 + dotWidth12Q5);
                 canvas.lineTo(screenXcenterQ5, screenYcenterQ5 + dotWidth2Q5);
-                canvas.lineTo(screenXcenterQ5 - dotWidth7Q5, screenYcenterQ5 + dotWidth24Q5);
+                canvas.lineTo(screenXcenterQ5 - dotWidth5Q5, screenYcenterQ5 + dotWidth12Q5);
                 canvas.lineTo(screenXcenterQ5 - dotWidth3Q5, screenYcenterQ5 + dotWidth4Q5);
                 canvas.lineTo(screenXcenterQ5 - dotWidth4Q5, screenYcenterQ5 + dotWidth3Q5);
-                canvas.lineTo(screenXcenterQ5 - dotWidth24Q5, screenYcenterQ5 + dotWidth7Q5);
+                canvas.lineTo(screenXcenterQ5 - dotWidth12Q5, screenYcenterQ5 + dotWidth5Q5);
             }
             else
             {
@@ -620,8 +614,7 @@ bool GraphElementDiamonds::drawCanvasWidget(const Rect& invalidatedArea) const
         return true;
     }
 
-    Canvas canvas(getPainter(), getAbsoluteRect(), invalidatedArea, getAlpha());
-
+    Canvas canvas(this, invalidatedArea);
     for (int16_t index = indexMin; index <= indexMax; index++)
     {
         if (isCenterInvisible(graph, index))
